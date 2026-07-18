@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 const S = {
@@ -20,8 +20,22 @@ const S = {
 
 const CATEGORIES = ["Careers", "Industry", "Skills", "Advice", "Study abroad"];
 
+const TOOLBAR_BUTTONS = [
+  { label: "B", title: "Bold", tag: "b" },
+  { label: "I", title: "Italic", tag: "i" },
+  { label: "H2", title: "Heading 2", tag: "h2" },
+  { label: "H3", title: "Heading 3", tag: "h3" },
+  { label: "¶", title: "Paragraph", tag: "p" },
+  { label: "• List", title: "Bullet list", wrap: "ul>li" },
+  { label: "1. List", title: "Numbered list", wrap: "ol>li" },
+  { label: "❝ Quote", title: "Blockquote", tag: "blockquote" },
+  { label: "—", title: "Horizontal rule", tag: "hr" },
+  { label: "Link", title: "Insert link", action: "link" },
+];
+
 export default function BlogForm({ initial = {}, isEdit = false }) {
   const router = useRouter();
+  const textareaRef = useRef(null);
   const [form, setForm] = useState({
     title: "", slug: "", category: "Careers", excerpt: "", content: "",
     author: "Veritas Team", status: "draft", scheduledAt: "",
@@ -33,8 +47,44 @@ export default function BlogForm({ initial = {}, isEdit = false }) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const insertAtCursor = useCallback((before, after = "") => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = form.content.substring(start, end);
+    const replacement = before + (selected || "text") + after;
+    const newContent = form.content.substring(0, start) + replacement + form.content.substring(end);
+    set("content", newContent);
+    setTimeout(() => {
+      ta.focus();
+      const cursorPos = start + before.length + (selected ? selected.length : 4) + after.length;
+      ta.setSelectionRange(cursorPos, cursorPos);
+    }, 0);
+  }, [form.content]);
+
+  const handleToolbar = (btn) => {
+    if (btn.action === "link") {
+      const url = prompt("Enter URL:");
+      if (!url) return;
+      insertAtCursor(`<a href="${url}">`, "</a>");
+      return;
+    }
+    if (btn.wrap) {
+      const [container, inner] = btn.wrap.split(">");
+      insertAtCursor(`<${container}>\n<${inner}>`, `</${inner}>\n</${container}>`);
+      return;
+    }
+    if (btn.tag === "hr") {
+      insertAtCursor("<hr>\n");
+      return;
+    }
+    insertAtCursor(`<${btn.tag}>`, `</${btn.tag}>`);
+  };
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -85,11 +135,57 @@ export default function BlogForm({ initial = {}, isEdit = false }) {
       </div>
 
       <div style={S.section}>
-        <h3 style={S.sh}>Content (HTML supported)</h3>
-        <div style={S.field}>
-          <textarea style={{ ...S.textarea, minHeight: "320px", fontFamily: "monospace", fontSize: "13px" }} value={form.content} onChange={(e) => set("content", e.target.value)} placeholder="<p>Your article content here…</p>" />
-          <p style={S.hint}>HTML is supported. Wrap content in paragraph tags.</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", paddingBottom: "8px", borderBottom: "1px solid #E6DFD3" }}>
+          <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: "16px", color: "#16294A", margin: 0 }}>Content</h3>
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            style={{
+              padding: "6px 14px", borderRadius: "8px", border: "1px solid #E6DFD3",
+              background: showPreview ? "#16294A" : "#fff", color: showPreview ? "#fff" : "#16294A",
+              fontSize: "13px", fontWeight: 500, cursor: "pointer", fontFamily: "inherit",
+              transition: "all .2s",
+            }}
+          >
+            {showPreview ? "Edit" : "Preview"}
+          </button>
         </div>
+
+        {showPreview ? (
+          <div className="blog-preview-wrap">
+            <div className="blog-preview-title">{form.title || "Untitled Post"}</div>
+            {form.excerpt && <p className="blog-preview-excerpt">{form.excerpt}</p>}
+            {form.content ? (
+              <div className="article" dangerouslySetInnerHTML={{ __html: form.content }} />
+            ) : (
+              <p style={{ color: "#aaa", fontStyle: "italic" }}>No content yet. Switch to Edit to start writing.</p>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="blog-editor-toolbar">
+              {TOOLBAR_BUTTONS.map((btn) => (
+                <button
+                  key={btn.label}
+                  type="button"
+                  title={btn.title}
+                  onClick={() => handleToolbar(btn)}
+                  className="blog-toolbar-btn"
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+            <textarea
+              ref={textareaRef}
+              style={{ ...S.textarea, minHeight: "380px", fontFamily: "'IBM Plex Mono',monospace", fontSize: "13px", borderTop: "none", borderRadius: "0 0 9px 9px" }}
+              value={form.content}
+              onChange={(e) => set("content", e.target.value)}
+              placeholder={"<h2>Your heading</h2>\n<p>Your article content here…</p>\n\n<h3>Sub heading</h3>\n<p>More content…</p>"}
+            />
+            <p style={S.hint}>HTML supported. Use the toolbar above for quick formatting, or type HTML directly.</p>
+          </>
+        )}
       </div>
 
       <div style={S.section}>

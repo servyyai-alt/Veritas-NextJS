@@ -432,6 +432,36 @@ section.block { padding: 84px 0; }
 .form-success h3 { font-size: 22px; margin-bottom: 10px; }
 .form-success p { font-size: 15px; max-width: 340px; margin: 0 auto; }
 
+/* Blog editor toolbar & preview */
+.blog-editor-toolbar {
+  display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px;
+  background: #f9f7f3; border: 1px solid #E6DFD3; border-bottom: none;
+  border-radius: 9px 9px 0 0;
+}
+.blog-toolbar-btn {
+  padding: 6px 12px; border: 1px solid transparent; border-radius: 6px;
+  background: transparent; color: #16294A; font-size: 13px; font-weight: 600;
+  font-family: "IBM Plex Mono", monospace; cursor: pointer;
+  transition: all .15s; line-height: 1;
+}
+.blog-toolbar-btn:hover { background: #fff; border-color: #E6DFD3; color: #8A2434; }
+.blog-preview-wrap {
+  border: 1px solid #E6DFD3; border-radius: 12px; padding: 28px 32px;
+  background: #fdfcf9; min-height: 200px;
+}
+.blog-preview-title {
+  font-family: "Space Grotesk", sans-serif; font-size: 28px; font-weight: 700;
+  color: #16294A; margin-bottom: 10px; line-height: 1.25;
+}
+.blog-preview-excerpt {
+  font-size: 17px; color: #54607A; margin-bottom: 20px; padding-bottom: 18px;
+  border-bottom: 1px solid #E6DFD3;
+}
+.blog-preview-wrap .article { max-width: 100%; }
+.blog-preview-wrap .article p { font-size: 16px; }
+.blog-preview-wrap .article h2 { font-size: 22px; }
+.blog-preview-wrap .article h3 { font-size: 18px; }
+
 /* CRM iframe embed */
 .crm-iframe-wrap { position: relative; border-radius: 18px; overflow: hidden; background: #f5f3ef; }
 .crm-iframe {
