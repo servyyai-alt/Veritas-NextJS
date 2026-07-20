@@ -36,7 +36,7 @@ export default function Placement() {
           <div className="wrap assure">
             <div className="assure-copy reveal">
               <span className="eyebrow">Our placement assurance</span>
-              <h2>A commitment that lasts until you&apos;re in your career</h2>
+              <h2 className="text-xl">A commitment that lasts until you&apos;re in your career</h2>
               <p>Here&apos;s our placement assurance in plain terms: it&apos;s built on the skills you walk away with. The day your course ends isn&apos;t the day we stop. We keep working with you, and if an employer points to something you&apos;re missing, we train you on it and get you back in the room.</p>
               <div className="assure-copy pull" style={{ fontFamily: "'Space Grotesk'", fontSize: "20px", color: "var(--navy)", fontWeight: 600, marginTop: "22px", paddingLeft: "18px", borderLeft: "3px solid var(--wine)", lineHeight: 1.35 }}>
                 Your skills get you the interview. We stay with you until you get the role.

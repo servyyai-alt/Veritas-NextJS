@@ -1895,7 +1895,8 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 /* Sidebar */
 .adm-sidebar {
   width: 240px; background: #16294A; display: flex; flex-direction: column;
-  flex-shrink: 0; position: relative; z-index: 100;
+  flex-shrink: 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  overflow-y: auto;
 }
 .adm-sidebar-head {
   padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1);
@@ -1932,7 +1933,7 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 .adm-sidebar-logout:hover { background: rgba(255,255,255,.08); }
 
 /* Main area */
-.adm-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.adm-main { flex: 1; display: flex; flex-direction: column; min-width: 0; margin-left: 240px; }
 .adm-content { flex: 1; overflow: auto; }
 
 /* Topbar (mobile only) */
@@ -1982,10 +1983,12 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   .adm-sidebar {
     position: fixed; top: 0; left: 0; bottom: 0;
     transform: translateX(-100%); transition: transform .3s cubic-bezier(.22,.61,.36,1);
-    box-shadow: none;
+    box-shadow: none; width: 240px;
   }
   .adm-sidebar-open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,.3); }
   .adm-sidebar-close { display: flex; }
+
+  .adm-main { margin-left: 0; }
 
   .adm-page { padding: 0 16px 32px; }
   .adm-card-grid { grid-template-columns: 1fr; }
