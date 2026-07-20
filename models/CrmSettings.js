@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const CrmSettingsSchema = new mongoose.Schema(
   {
     contactFormUrl: { type: String, default: "" },
+    counsellingFormUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );

@@ -15,10 +15,23 @@ export default function Footer() {
                 <div className="by">by IQgrads</div>
               </div>
             </Link>
-            <p>We&apos;re an Authorised Pearson Partner. We give you hands-on training to a standard the world trusts — and help you turn it into a real job.</p>
+            <p>
+              We&apos;re an Authorised Pearson Partner. We give you hands-on
+              training to a standard the world trusts — and help you turn it
+              into a real job.
+            </p>
             <div className="pseal" style={{ marginTop: "6px" }}>
-              <Image className="plogo" src="/pearson-navy.png" alt="Pearson" width={66} height={22} />
-              <div className="t"><b>Authorised Partner</b><span>Selected to deliver to Pearson standards</span></div>
+              <Image
+                className="plogo"
+                src="/pearson-navy.png"
+                alt="Pearson"
+                width={66}
+                height={22}
+              />
+              <div className="t">
+                <b>Authorised Partner</b>
+                <span>Selected to deliver to Pearson standards</span>
+              </div>
             </div>
           </div>
           <div className="foot-col">
@@ -28,6 +41,10 @@ export default function Footer() {
             <Link href="/placement">Placement</Link>
             <Link href="/about">About</Link>
             <Link href="/blog">Blog</Link>
+
+            <Link href="/admin/login" >
+              Admin Login
+            </Link>
           </div>
           <div className="foot-col">
             <h5>Programmes</h5>
@@ -43,11 +60,11 @@ export default function Footer() {
           </div>
         </div>
         <div className="foot-bottom">
-          <span>© 2026 Veritas by IQgrads · <Link href="/privacy-policy">Privacy Policy</Link></span>
+          <span>
+            © 2026 Veritas by IQgrads ·{" "}
+            <Link href="/privacy-policy">Privacy Policy</Link>
+          </span>
           <span>Authorised Pearson Partner · Pan-India</span>
-        </div>
-        <div style={{ marginTop: "14px", textAlign: "right" }}>
-          <Link href="/admin/login" className="admin-login-link">Admin Login</Link>
         </div>
       </div>
     </footer>

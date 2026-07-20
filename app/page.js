@@ -30,7 +30,7 @@ export default function Home() {
               </div>
               <div className="hero-seal">
                 <div className="pseal on-img">
-                  <Image className="plogo plogo-w" src="/pearson-white.png" alt="Pearson" width={0} height={0} style={{ width: "auto", height: "22px" }} />
+                  <Image className="plogo plogo-w" src="/pearson-white.png" alt="Pearson" width={66} height={22} />
                   <div className="t"><b>Authorised Pearson Partner</b><span>Selected to deliver to Pearson standards</span></div>
                 </div>
               </div>

@@ -16,7 +16,10 @@ export async function generateMetadata({ params }) {
   return {
     title: prog.metaTitle || `${prog.title} — Veritas by IQgrads`,
     description: prog.metaDesc || prog.shortDesc || "",
-    openGraph: { title: prog.metaTitle || prog.title, description: prog.metaDesc || prog.shortDesc || "" },
+    openGraph: {
+      title: prog.metaTitle || prog.title,
+      description: prog.metaDesc || prog.shortDesc || "",
+    },
   };
 }
 
@@ -28,7 +31,12 @@ export default async function ProgrammePage({ params }) {
 
   const qs = prog.quickStats?.length
     ? prog.quickStats
-    : [{ value: "5–6 mo", label: "Duration" }, { value: "Graduate", label: "Entry level" }, { value: "On-campus", label: "Format" }, { value: "Pearson", label: "Standard" }];
+    : [
+        { value: "5–6 mo", label: "Duration" },
+        { value: "Graduate", label: "Entry level" },
+        { value: "On-campus", label: "Format" },
+        { value: "Pearson", label: "Standard" },
+      ];
 
   return (
     <>
@@ -36,11 +44,14 @@ export default async function ProgrammePage({ params }) {
       <main id="main" tabIndex="-1">
         {/* Hero */}
         <section className={`pd-hero cine ${prog.sceneClass || "s-auto"} kb`}>
-          <div className="ph"></div><div className="tint"></div>
+          <div className="ph"></div>
+          <div className="tint"></div>
           <div className="wrap pd-hero-inner">
             <div className="breadcrumb">
-              <Link href="/">Home</Link><span className="sep">/</span>
-              <Link href="/programmes">Programmes</Link><span className="sep">/</span>
+              <Link href="/">Home</Link>
+              <span className="sep">/</span>
+              <Link href="/programmes">Programmes</Link>
+              <span className="sep">/</span>
               <span>{prog.title}</span>
             </div>
             <span className="eyebrow on-img" style={{ marginTop: "16px" }}>
@@ -63,7 +74,6 @@ export default async function ProgrammePage({ params }) {
         <section className="white-sec">
           <div className="wrap pd-body">
             <div className="pd-main">
-
               {/* Overview */}
               {prog.overview && (
                 <div className="pd-sec">
@@ -82,7 +92,10 @@ export default async function ProgrammePage({ params }) {
                     {prog.roles.map((r, i) => (
                       <div className="role" key={i}>
                         <span className="rdot"></span>
-                        <div><b>{r.role}</b><span>{r.desc}</span></div>
+                        <div>
+                          <b>{r.role}</b>
+                          <span>{r.desc}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -97,7 +110,8 @@ export default async function ProgrammePage({ params }) {
                   <div className="tag-list">
                     {prog.skills.map((s, i) => (
                       <span className="tag" key={i}>
-                        <span className="mono">0{i + 1}</span>{s}
+                        <span className="mono">0{i + 1}</span>
+                        {s}
                       </span>
                     ))}
                   </div>
@@ -133,8 +147,13 @@ export default async function ProgrammePage({ params }) {
                   {prog.feeSteps?.length > 0 && (
                     <div className="fee-split">
                       {prog.feeSteps.map((fs, i) => (
-                        <div className={`fee-step${i === 1 ? " s2" : ""}`} key={i}>
-                          <div className="fee-pct">{fs.stage} — {fs.pct}</div>
+                        <div
+                          className={`fee-step${i === 1 ? " s2" : ""}`}
+                          key={i}
+                        >
+                          <div className="fee-pct">
+                            {fs.stage} — {fs.pct}
+                          </div>
                           <div className="fee-amt">{fs.amount}</div>
                           <b>{fs.title}</b>
                           <p>{fs.desc}</p>
@@ -148,50 +167,138 @@ export default async function ProgrammePage({ params }) {
                         <div className="fee-pct">Stage 1 — 50%</div>
                         <div className="fee-amt">At enrolment</div>
                         <b>Paid upfront</b>
-                        <p>Paid before the programme starts to secure your place.</p>
+                        <p>
+                          Paid before the programme starts to secure your place.
+                        </p>
                       </div>
                       <div className="fee-step s2">
                         <div className="fee-pct">Stage 2 — 50%</div>
                         <div className="fee-amt">On offer / cert</div>
                         <b>On offer or certification</b>
-                        <p>Paid only when you receive an offer letter or complete certification.</p>
+                        <p>
+                          Paid only when you receive an offer letter or complete
+                          certification.
+                        </p>
                       </div>
                     </div>
                   )}
                   <p className="gap-note" style={{ marginTop: "14px" }}>
-                    Fees are illustrative — confirm in your consultation. Scholarships and financing are available.
+                    Fees are illustrative — confirm in your consultation.
+                    Scholarships and financing are available.
                   </p>
                 </div>
               )}
+
+              {/* Study Abroad */}
+              <div className="pd-sec">
+                <span className="eyebrow">After Veritas · study abroad</span>
+                <h2>A springboard to a Master&apos;s degree in Europe</h2>
+                <p>
+                  For a lot of people, Veritas is just step one. The hands-on,
+                  globally-recognised experience makes your profile stronger if
+                  you want to study abroad later — and these happen to be the
+                  exact skills European employers are short on.
+                </p>
+                <div className="abroad">
+                  <div className="pnum">Primary pathway</div>
+                  <b>A Master&apos;s degree abroad — Europe in focus</b>
+                  <p>
+                    Automation, robotics, semiconductors, EV, Industry 4.0 — these
+                    skills are in real demand across Europe right now.
+                  </p>
+                  <div
+                    className="tag-list"
+                    style={{ position: "relative", zIndex: 1 }}
+                  >
+                    <span className="tag">Germany</span>
+                    <span className="tag">Netherlands</span>
+                    <span className="tag">Ireland</span>
+                    <span className="tag">Nordics</span>
+                    <span className="tag">Wider EU</span>
+                  </div>
+                </div>
+                <div className="path-grid">
+                  <div className="path">
+                    <div className="pnum">ALSO</div>
+                    <b>Global-standard foundation</b>
+                    <p>
+                      Pearson-aligned learning that complements an international
+                      application.*
+                    </p>
+                  </div>
+                  <div className="path">
+                    <div className="pnum">ALSO</div>
+                    <b>Stack a specialisation</b>
+                    <p>Add advanced tracks before applying abroad.</p>
+                  </div>
+                  <div className="path">
+                    <div className="pnum">ALSO</div>
+                    <b>Professional certifications</b>
+                    <p>Industry certifications that travel internationally.</p>
+                  </div>
+                </div>
+                <p className="gap-note" style={{ marginTop: "14px" }}>
+                  * Study-abroad outcomes depend on admissions, language, funding
+                  and visas, which Veritas does not control. Confirm guidance and
+                  any partnerships, and verify demand claims, before publishing.
+                </p>
+              </div>
             </div>
 
             {/* Aside */}
             <div className="pd-aside">
               <div className="apply-card">
                 <div className="apply-pearson">
-                  <Image className="plogo" src="/pearson-navy.png" alt="Pearson" width={66} height={22} />
-                  <div className="t"><b>Authorised Pearson Partner</b></div>
+                  <Image
+                    className="plogo"
+                    src="/pearson-navy.png"
+                    alt="Pearson"
+                    width={66}
+                    height={22}
+                  />
+                  <div className="t">
+                    <b>Authorised Pearson Partner</b>
+                  </div>
                 </div>
                 <div className="ac-tag">Programme · {prog.domainCode}</div>
                 <h3>{prog.title}</h3>
                 {qs.map((q, i) => (
-                  <div className="ac-row" key={i}><span>{q.label}</span><b>{q.value}</b></div>
+                  <div className="ac-row" key={i}>
+                    <span>{q.label}</span>
+                    <b>{q.value}</b>
+                  </div>
                 ))}
-                <Link className="btn btn-primary" href="/book">Apply now <span className="arrow">→</span></Link>
-                <p className="ac-note">Free consultation first — no commitment to apply.</p>
+                <Link className="btn btn-primary" href="/book">
+                  Apply now <span className="arrow">→</span>
+                </Link>
+                <p className="ac-note">
+                  Free consultation first — no commitment to apply.
+                </p>
               </div>
 
               {prog.salaryBands?.length > 0 && (
                 <div className="salary-band">
-                  <p className="mono" style={{ fontSize: "11px", letterSpacing: ".08em", textTransform: "uppercase", color: "var(--slate)", marginBottom: "4px" }}>
+                  <p
+                    className="mono"
+                    style={{
+                      fontSize: "11px",
+                      letterSpacing: ".08em",
+                      textTransform: "uppercase",
+                      color: "var(--slate)",
+                      marginBottom: "4px",
+                    }}
+                  >
                     Indicative salaries
                   </p>
                   {prog.salaryBands.map((s, i) => (
                     <div className="salary-row" key={i}>
-                      <b>{s.level}</b><span className="amt">{s.amount}</span>
+                      <b>{s.level}</b>
+                      <span className="amt">{s.amount}</span>
                     </div>
                   ))}
-                  <p className="gap-note" style={{ marginTop: "10px" }}>Indicative — verify before publishing.</p>
+                  <p className="gap-note" style={{ marginTop: "10px" }}>
+                    Indicative — verify before publishing.
+                  </p>
                 </div>
               )}
             </div>
@@ -203,10 +310,17 @@ export default async function ProgrammePage({ params }) {
           <div className="wrap reveal">
             <span className="eyebrow center">Ready to start?</span>
             <h2>{prog.title} — book a free consultation.</h2>
-            <p>Talk to a counsellor about whether this programme is right for you.</p>
+            <p>
+              Talk to a counsellor about whether this programme is right for
+              you.
+            </p>
             <div className="hero-cta">
-              <Link className="btn btn-primary" href="/book">Book a consultation <span className="arrow">→</span></Link>
-              <Link className="btn btn-ghost" href="/programmes">All programmes</Link>
+              <Link className="btn btn-primary" href="/book">
+                Book a consultation <span className="arrow">→</span>
+              </Link>
+              <Link className="btn btn-ghost" href="/programmes">
+                All programmes
+              </Link>
             </div>
           </div>
         </section>

@@ -2,15 +2,6 @@ import { connectDB } from "@/lib/mongodb";
 import CrmSettings from "@/models/CrmSettings";
 import { getAuthUser } from "@/lib/auth";
 
-function isValidUrl(str) {
-  try {
-    const url = new URL(str);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
 function sanitizeUrl(str) {
   try {
     const url = new URL(str);
@@ -25,7 +16,7 @@ export async function GET() {
     const settings = await CrmSettings.findOne().lean();
     return Response.json({
       success: true,
-      contactFormUrl: settings?.contactFormUrl || "",
+      counsellingFormUrl: settings?.counsellingFormUrl || "",
     });
   } catch (err) {
     console.error(err);
@@ -38,13 +29,13 @@ export async function PUT(req) {
     const user = await getAuthUser();
     if (!user) return Response.json({ success: false, message: "Unauthorized" }, { status: 401 });
 
-    const { contactFormUrl } = await req.json();
+    const { counsellingFormUrl } = await req.json();
 
-    if (!contactFormUrl || !contactFormUrl.trim()) {
+    if (!counsellingFormUrl || !counsellingFormUrl.trim()) {
       return Response.json({ success: false, message: "URL is required" }, { status: 400 });
     }
 
-    const sanitized = sanitizeUrl(contactFormUrl.trim());
+    const sanitized = sanitizeUrl(counsellingFormUrl.trim());
     if (!sanitized) {
       return Response.json({ success: false, message: "Invalid URL. Only http:// and https:// URLs are allowed." }, { status: 400 });
     }
@@ -52,13 +43,13 @@ export async function PUT(req) {
     await connectDB();
     const settings = await CrmSettings.findOne();
     if (settings) {
-      settings.contactFormUrl = sanitized;
+      settings.counsellingFormUrl = sanitized;
       await settings.save();
     } else {
-      await CrmSettings.create({ contactFormUrl: sanitized });
+      await CrmSettings.create({ counsellingFormUrl: sanitized });
     }
 
-    return Response.json({ success: true, contactFormUrl: sanitized });
+    return Response.json({ success: true, counsellingFormUrl: sanitized });
   } catch (err) {
     console.error(err);
     return Response.json({ success: false, message: "Server error" }, { status: 500 });
@@ -73,11 +64,11 @@ export async function DELETE() {
     await connectDB();
     const settings = await CrmSettings.findOne();
     if (settings) {
-      settings.contactFormUrl = "";
+      settings.counsellingFormUrl = "";
       await settings.save();
     }
 
-    return Response.json({ success: true, message: "CRM URL removed" });
+    return Response.json({ success: true, message: "Counselling URL removed" });
   } catch (err) {
     console.error(err);
     return Response.json({ success: false, message: "Server error" }, { status: 500 });

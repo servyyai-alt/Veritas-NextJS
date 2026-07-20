@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsApp from "@/components/WhatsApp";
 import RevealObserver from "@/components/RevealObserver";
-import BookForm from "./BookForm";
+import BookFormOrCrm from "./BookFormOrCrm";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -39,7 +39,7 @@ export default function Book() {
                 <div><b>Authorised Pearson Partner</b><span>You train to a globally trusted standard</span></div>
               </div>
             </div>
-            <BookForm />
+            <BookFormOrCrm />
           </div>
         </section>
       </main>
