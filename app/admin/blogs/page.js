@@ -38,7 +38,7 @@ export default function AdminBlogs() {
   const pillClass = (s) => `adm-pill ${s === "published" ? "adm-pill-green" : s === "coming_soon" ? "adm-pill-gold" : "adm-pill-gray"}`;
 
   return (
-    <div className={`adm-page ${mounted ? "adm-page-in" : ""}`}>
+    <div className={`adm-page mtop ${mounted ? "adm-page-in" : ""}`}>
       <div className="adm-header">
         <div className="adm-header-text">
           <h1 className="adm-title">Blog Posts</h1>

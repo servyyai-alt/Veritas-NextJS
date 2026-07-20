@@ -42,7 +42,7 @@ export default function AdminSettings() {
   };
 
   return (
-    <div className={`adm-page ${mounted ? "adm-page-in" : ""}`}>
+    <div className={`adm-page mtop ${mounted ? "adm-page-in" : ""}`}>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <div className="adm-header">

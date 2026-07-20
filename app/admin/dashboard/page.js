@@ -148,7 +148,7 @@ export default function Dashboard() {
   const greeting = hours < 12 ? "Good morning" : hours < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className={`dash-page ${mounted ? "dash-page-visible" : ""}`}>
+    <div className={`dash-page mtop ${mounted ? "dash-page-visible" : ""}`}>
       {/* Welcome banner */}
       <div className="dash-welcome">
         <div className="dash-welcome-content">

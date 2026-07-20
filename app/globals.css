@@ -1201,6 +1201,10 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   opacity: 0;
   transition: opacity .4s ease;
 }
+
+.mtop {
+  margin-top: 32px;
+}
 .dash-page-visible { opacity: 1; }
 
 /* Welcome banner */

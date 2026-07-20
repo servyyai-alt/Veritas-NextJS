@@ -37,7 +37,7 @@ export default function AdminContact() {
   };
 
   return (
-    <div className={`adm-page ${mounted ? "adm-page-in" : ""}`}>
+    <div className={`adm-page mtop ${mounted ? "adm-page-in" : ""}`}>
       <div className="adm-header">
         <div className="adm-header-text">
           <h1 className="adm-title">Contact Submissions</h1>
