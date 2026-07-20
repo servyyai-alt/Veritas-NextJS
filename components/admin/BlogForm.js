@@ -46,7 +46,6 @@ export default function BlogForm({ initial = {}, isEdit = false }) {
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -84,18 +83,6 @@ export default function BlogForm({ initial = {}, isEdit = false }) {
       return;
     }
     insertAtCursor(`<${btn.tag}>`, `</${btn.tag}>`);
-  };
-
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    setUploading(false);
-    if (data.success) set("image", data.url);
   };
 
   const handleSubmit = async () => {
@@ -205,20 +192,6 @@ export default function BlogForm({ initial = {}, isEdit = false }) {
           </div>
         </div>
         <div style={S.field}><label style={S.label}>Related Post Slugs (comma separated)</label><input style={S.input} value={form.relatedSlugs} onChange={(e) => set("relatedSlugs", e.target.value)} placeholder="degree-no-job, automation-roles-india" /></div>
-      </div>
-
-      <div style={S.section}>
-        <h3 style={S.sh}>Image</h3>
-        <input type="file" accept="image/*" onChange={handleUpload} style={{ marginBottom: "10px" }} />
-        {uploading && <span style={{ fontSize: "13px", color: "#41506A" }}>Uploading…</span>}
-        {form.image && <div style={{ marginTop: "8px" }}><img src={form.image} alt="" style={{ maxHeight: "120px", borderRadius: "8px" }} /></div>}
-        <div style={{ marginTop: "8px" }}><label style={S.label}>Or paste image URL</label><input style={S.input} value={form.image} onChange={(e) => set("image", e.target.value)} /></div>
-      </div>
-
-      <div style={S.section}>
-        <h3 style={S.sh}>SEO</h3>
-        <div style={S.field}><label style={S.label}>Meta Title</label><input style={S.input} value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} /></div>
-        <div style={S.field}><label style={S.label}>Meta Description</label><textarea style={{ ...S.textarea, minHeight: "80px" }} value={form.metaDesc} onChange={(e) => set("metaDesc", e.target.value)} /></div>
       </div>
 
       <div>

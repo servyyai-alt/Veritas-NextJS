@@ -138,21 +138,25 @@ export default async function ProgrammePage({ params }) {
               {/* Fees */}
               {prog.feeTotal && (
                 <div className="pd-sec">
-                  <span className="eyebrow">Programme fees</span>
-                  <h2>How you pay</h2>
-                  <div className="fee-total">
-                    <span className="ft-l">Total fee</span>
+                  <span className="eyebrow">Fees &amp; payment</span>
+                  <h2>Pay half now — the rest when it pays off</h2>
+                  <div className="fee-pearson" style={{ display: "inline-flex", alignItems: "center", gap: "9px", fontFamily: "'IBM Plex Mono'", fontSize: "11.5px", color: "var(--gold-deep, #7A5722)", marginTop: "4px" }}>
+                    <span style={{ width: "22px", height: "22px", border: "1px solid var(--gold, #B0883C)", borderRadius: "6px", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "var(--gold-deep, #7A5722)", fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: "11px" }}>P</span>
+                    Delivered to globally recognised Pearson standards
+                  </div>
+                  <div className="fee-total" style={{ marginTop: "14px" }}>
+                    <span className="ft-l">Total programme fee*</span>
                     <span className="ft-v">{prog.feeTotal}</span>
                   </div>
                   {prog.feeSteps?.length > 0 && (
                     <div className="fee-split">
                       {prog.feeSteps.map((fs, i) => (
                         <div
-                          className={`fee-step${i === 1 ? " s2" : ""}`}
+                          className={`fee-step${i === 0 ? " s1" : i === 1 ? " s2" : ""}`}
                           key={i}
                         >
                           <div className="fee-pct">
-                            {fs.stage} — {fs.pct}
+                            {fs.stage} · {fs.pct}
                           </div>
                           <div className="fee-amt">{fs.amount}</div>
                           <b>{fs.title}</b>
@@ -183,8 +187,7 @@ export default async function ProgrammePage({ params }) {
                     </div>
                   )}
                   <p className="gap-note" style={{ marginTop: "14px" }}>
-                    Fees are illustrative — confirm in your consultation.
-                    Scholarships and financing are available.
+                    * Illustrative. Scholarships and financing available — confirm exact fees in your consultation.
                   </p>
                 </div>
               )}
@@ -243,6 +246,22 @@ export default async function ProgrammePage({ params }) {
                   any partnerships, and verify demand claims, before publishing.
                 </p>
               </div>
+
+              {/* Hiring Industries */}
+              {prog.hiringIndustries?.length > 0 && (
+                <div className="pd-sec" style={{ borderBottom: "none" }}>
+                  <span className="eyebrow">Hiring industries</span>
+                  <h2>Who hires for these skills</h2>
+                  <div className="tag-list">
+                    {prog.hiringIndustries.map((t, i) => (
+                      <span className="tag" key={i}>{t}</span>
+                    ))}
+                  </div>
+                  <p className="gap-note" style={{ marginTop: "14px" }}>
+                    Indicative sectors hiring for these skills — verify before publishing.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Aside */}

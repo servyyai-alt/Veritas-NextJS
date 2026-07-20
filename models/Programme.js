@@ -24,6 +24,7 @@ const ProgrammeSchema = new mongoose.Schema(
     feeTotal: String,
     feeSteps: [FeeStepSchema],
     salaryBands: [SalarySchema],
+    hiringIndustries: [String],
     image: String,
     published: { type: Boolean, default: false },
     metaTitle: String,

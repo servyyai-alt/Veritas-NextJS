@@ -25,35 +25,24 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
   const router = useRouter();
   const [form, setForm] = useState({
     title: "", domainCode: "", slug: "", tag: "Programme", sceneClass: "s-auto",
-    shortDesc: "", lead: "", overview: "", feeTotal: "", image: "",
-    skills: [], published: false, metaTitle: "", metaDesc: "",
+    shortDesc: "", lead: "", overview: "", feeTotal: "",
+    skills: [], hiringIndustries: [], published: false, metaTitle: "", metaDesc: "",
     quickStats: QS_DEFAULTS, roles: [], projects: [], feeSteps: [], salaryBands: [],
     ...initial,
     skills: initial.skills ? initial.skills.join(", ") : "",
+    hiringIndustries: initial.hiringIndustries ? initial.hiringIndustries.join(", ") : "",
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    setUploading(false);
-    if (data.success) set("image", data.url);
-  };
 
   const handleSubmit = async () => {
     setError(""); setSaving(true);
     const payload = {
       ...form,
       skills: typeof form.skills === "string" ? form.skills.split(",").map((s) => s.trim()).filter(Boolean) : form.skills,
+      hiringIndustries: typeof form.hiringIndustries === "string" ? form.hiringIndustries.split(",").map((s) => s.trim()).filter(Boolean) : form.hiringIndustries,
     };
     const url = isEdit ? `/api/programmes/${initial._id}` : "/api/programmes";
     const method = isEdit ? "PUT" : "POST";
@@ -79,6 +68,10 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
   const addSalary = () => set("salaryBands", [...(form.salaryBands || []), { level: "", amount: "" }]);
   const setSalary = (i, k, v) => { const s = [...(form.salaryBands || [])]; s[i] = { ...s[i], [k]: v }; set("salaryBands", s); };
   const removeSalary = (i) => set("salaryBands", (form.salaryBands || []).filter((_, idx) => idx !== i));
+
+  const addFeeStep = () => set("feeSteps", [...(form.feeSteps || []), { stage: "", pct: "", amount: "", title: "", desc: "" }]);
+  const setFeeStep = (i, k, v) => { const fs = [...(form.feeSteps || [])]; fs[i] = { ...fs[i], [k]: v }; set("feeSteps", fs); };
+  const removeFeeStep = (i) => set("feeSteps", (form.feeSteps || []).filter((_, idx) => idx !== i));
 
   return (
     <div style={S.form}>
@@ -161,6 +154,29 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
       <div style={S.section}>
         <h3 style={S.sh}>Fees</h3>
         <div style={S.field}><label style={S.label}>Total Fee</label><input style={S.input} value={form.feeTotal} onChange={(e) => set("feeTotal", e.target.value)} placeholder="₹1,20,000" /></div>
+        {(form.feeSteps || []).map((fs, i) => (
+          <div key={i} style={{ background: "#f7f5ef", borderRadius: "10px", padding: "14px", marginBottom: "10px" }}>
+            <div style={S.grid2}>
+              <input style={{ ...S.input, marginBottom: "8px" }} placeholder="Stage (e.g. Stage 1)" value={fs.stage} onChange={(e) => setFeeStep(i, "stage", e.target.value)} />
+              <input style={{ ...S.input, marginBottom: "8px" }} placeholder="Percentage (e.g. 50%)" value={fs.pct} onChange={(e) => setFeeStep(i, "pct", e.target.value)} />
+            </div>
+            <div style={S.grid2}>
+              <input style={{ ...S.input, marginBottom: "8px" }} placeholder="Amount (e.g. ₹65,000)" value={fs.amount} onChange={(e) => setFeeStep(i, "amount", e.target.value)} />
+              <input style={{ ...S.input, marginBottom: "8px" }} placeholder="Title (e.g. At enrolment)" value={fs.title} onChange={(e) => setFeeStep(i, "title", e.target.value)} />
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input style={{ ...S.input, flex: 1 }} placeholder="Description" value={fs.desc} onChange={(e) => setFeeStep(i, "desc", e.target.value)} />
+              <button onClick={() => removeFeeStep(i)} style={{ background: "#c0392b", color: "#fff", border: "none", borderRadius: "8px", padding: "0 12px", cursor: "pointer" }}>×</button>
+            </div>
+          </div>
+        ))}
+        <button onClick={addFeeStep} style={{ fontSize: "13px", color: "#8A2434", background: "none", border: "1px dashed #E7C9CD", borderRadius: "8px", padding: "8px 14px", cursor: "pointer" }}>+ Add fee step</button>
+      </div>
+
+      {/* Hiring Industries */}
+      <div style={S.section}>
+        <h3 style={S.sh}>Hiring Industries (comma separated)</h3>
+        <textarea style={S.textarea} value={form.hiringIndustries} onChange={(e) => set("hiringIndustries", e.target.value)} placeholder="Automotive, FMCG and packaging, Pharmaceuticals, Steel and metals…" />
       </div>
 
       {/* Salary */}
@@ -176,22 +192,6 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
           </div>
         ))}
         <button onClick={addSalary} style={{ fontSize: "13px", color: "#8A2434", background: "none", border: "1px dashed #E7C9CD", borderRadius: "8px", padding: "8px 14px", cursor: "pointer" }}>+ Add band</button>
-      </div>
-
-      {/* Image */}
-      <div style={S.section}>
-        <h3 style={S.sh}>Image</h3>
-        <input type="file" accept="image/*" onChange={handleUpload} style={{ marginBottom: "10px" }} />
-        {uploading && <span style={{ fontSize: "13px", color: "#41506A" }}>Uploading…</span>}
-        {form.image && <div style={{ marginTop: "8px" }}><img src={form.image} alt="" style={{ maxHeight: "120px", borderRadius: "8px" }} /></div>}
-        <div style={{ marginTop: "8px" }}><label style={S.label}>Or paste URL</label><input style={S.input} value={form.image} onChange={(e) => set("image", e.target.value)} /></div>
-      </div>
-
-      {/* SEO */}
-      <div style={S.section}>
-        <h3 style={S.sh}>SEO</h3>
-        <div style={S.field}><label style={S.label}>Meta Title</label><input style={S.input} value={form.metaTitle} onChange={(e) => set("metaTitle", e.target.value)} /></div>
-        <div style={S.field}><label style={S.label}>Meta Description</label><textarea style={{ ...S.textarea, minHeight: "80px" }} value={form.metaDesc} onChange={(e) => set("metaDesc", e.target.value)} /></div>
       </div>
 
       {/* Publish */}

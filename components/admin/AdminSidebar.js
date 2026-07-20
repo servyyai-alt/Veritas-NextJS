@@ -12,44 +12,50 @@ const NAV = [
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ open, onClose }) {
   const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
+    onClose?.();
     await fetch("/api/admin/logout", { method: "POST" });
     router.push("/");
   };
 
+  const handleClick = () => { onClose?.(); };
+
   return (
-    <aside style={{ width: "240px", background: "#16294A", display: "flex", flexDirection: "column", flexShrink: 0 }} className="h-auto">
-      <div style={{ padding: "24px 20px 20px", borderBottom: "1px solid rgba(255,255,255,.1)" }}>
-        <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "18px", color: "#fff" }}>Veritas</div>
-        <div style={{ fontFamily: "'IBM Plex Mono',monospace", fontSize: "10px", color: "rgba(255,255,255,.5)", letterSpacing: ".12em", textTransform: "uppercase", marginTop: "2px" }}>Admin Panel</div>
+    <aside className={`adm-sidebar ${open ? "adm-sidebar-open" : ""}`}>
+      <div className="adm-sidebar-head">
+        <div>
+          <div className="adm-sidebar-brand">Veritas</div>
+          <div className="adm-sidebar-sub">Admin Panel</div>
+        </div>
+        <button className="adm-sidebar-close" onClick={onClose} aria-label="Close menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
-      <nav style={{ flex: 1, padding: "16px 12px" }}>
+      <nav className="adm-sidebar-nav">
         {NAV.map((n) => {
           const active = pathname.startsWith(n.href);
           return (
-            <Link key={n.href} href={n.href} style={{
-              display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px",
-              borderRadius: "8px", marginBottom: "4px", fontSize: "14px", fontWeight: 500,
-              color: active ? "#fff" : "rgba(255,255,255,.65)",
-              background: active ? "rgba(255,255,255,.12)" : "transparent",
-              textDecoration: "none", transition: "all .2s",
-            }}>
-              <span>{n.icon}</span>{n.label}
+            <Link
+              key={n.href}
+              href={n.href}
+              onClick={handleClick}
+              className={`adm-sidebar-link ${active ? "adm-sidebar-active" : ""}`}
+            >
+              <span className="adm-sidebar-icon">{n.icon}</span>
+              {n.label}
             </Link>
           );
         })}
       </nav>
-      <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,.1)" }}>
-        <button onClick={handleLogout} style={{
-          width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 12px",
-          borderRadius: "8px", fontSize: "14px", fontWeight: 500, color: "rgba(255,255,255,.65)",
-          background: "transparent", border: "none", cursor: "pointer",
-        }}>
-          🚪 Logout
+      <div className="adm-sidebar-foot">
+        <button onClick={handleLogout} className="adm-sidebar-link adm-sidebar-logout">
+          <span className="adm-sidebar-icon">🚪</span> Logout
         </button>
       </div>
     </aside>

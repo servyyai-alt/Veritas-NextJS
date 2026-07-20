@@ -1875,7 +1875,94 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 .adm-skel-bar.w40 { width: 40%; }
 .adm-skel-bar.w60 { width: 60%; }
 
-/* Admin responsive */
+/* ═══════════════════════════════════════════
+   Admin Shell — Sidebar + Topbar + Layout
+   ═══════════════════════════════════════════ */
+
+.adm-shell {
+  display: flex; min-height: 100vh;
+  font-family: "IBM Plex Sans", sans-serif; background: #f4f6f9;
+}
+
+/* Overlay (mobile only) */
+.adm-overlay {
+  display: none; position: fixed; inset: 0; z-index: 90;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Sidebar */
+.adm-sidebar {
+  width: 240px; background: #16294A; display: flex; flex-direction: column;
+  flex-shrink: 0; position: relative; z-index: 100;
+}
+.adm-sidebar-head {
+  padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.adm-sidebar-brand {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 18px; color: #fff;
+}
+.adm-sidebar-sub {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px;
+  color: rgba(255,255,255,.5); letter-spacing: .12em;
+  text-transform: uppercase; margin-top: 2px;
+}
+.adm-sidebar-close {
+  display: none; background: none; border: none; color: rgba(255,255,255,.6);
+  cursor: pointer; padding: 4px; border-radius: 6px; transition: color .2s, background .2s;
+}
+.adm-sidebar-close:hover { color: #fff; background: rgba(255,255,255,.1); }
+.adm-sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+.adm-sidebar-link {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 8px; margin-bottom: 4px; font-size: 14px; font-weight: 500;
+  color: rgba(255,255,255,.65); background: transparent;
+  text-decoration: none; transition: all .2s; border: none; cursor: pointer;
+  width: 100%; text-align: left; font-family: "IBM Plex Sans", sans-serif;
+}
+.adm-sidebar-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+.adm-sidebar-active { color: #fff !important; background: rgba(255,255,255,.12) !important; }
+.adm-sidebar-icon { flex-shrink: 0; width: 20px; text-align: center; font-size: 15px; }
+.adm-sidebar-foot {
+  padding: 16px 12px; border-top: 1px solid rgba(255,255,255,.1);
+}
+.adm-sidebar-logout:hover { background: rgba(255,255,255,.08); }
+
+/* Main area */
+.adm-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.adm-content { flex: 1; overflow: auto; }
+
+/* Topbar (mobile only) */
+.adm-topbar {
+  display: none; align-items: center; gap: 12px;
+  padding: 14px 16px; background: #fff;
+  border-bottom: 1px solid #E6DFD3; position: sticky; top: 0; z-index: 50;
+}
+.adm-hamburger {
+  background: none; border: none; color: #16294A;
+  cursor: pointer; padding: 6px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s;
+}
+.adm-hamburger:hover { background: #f0ebe3; }
+.adm-topbar-brand { display: flex; align-items: baseline; gap: 6px; }
+.adm-topbar-logo {
+  font-family: "Space Grotesk", sans-serif; font-weight: 700;
+  font-size: 16px; color: #16294A;
+}
+.adm-topbar-sub {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px;
+  color: #54607A; letter-spacing: .1em; text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════
+   Admin Responsive
+   ═══════════════════════════════════════════ */
+
+/* Tablet: sidebar still visible, card grids adjust */
 @media (max-width: 980px) {
   .adm-card-grid { grid-template-columns: 1fr 1fr; }
   .adm-settings-grid { grid-template-columns: 1fr; }
@@ -1886,11 +1973,41 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   }
   .adm-contact-detail { position: static; }
 }
-@media (max-width: 680px) {
+
+/* Mobile: sidebar becomes slide-in drawer */
+@media (max-width: 768px) {
+  .adm-overlay { display: block; }
+  .adm-topbar { display: flex; }
+
+  .adm-sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    transform: translateX(-100%); transition: transform .3s cubic-bezier(.22,.61,.36,1);
+    box-shadow: none;
+  }
+  .adm-sidebar-open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,.3); }
+  .adm-sidebar-close { display: flex; }
+
   .adm-page { padding: 0 16px 32px; }
   .adm-card-grid { grid-template-columns: 1fr; }
   .adm-header { flex-direction: column; align-items: flex-start; gap: 14px; }
   .adm-toolbar { flex-direction: column; align-items: stretch; }
   .adm-search-bar { max-width: 100%; }
-  .adm-filter-pills { overflow-x: auto; flex-wrap: nowrap; }
+  .adm-filter-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+  .adm-filter-pill { white-space: nowrap; flex-shrink: 0; }
+  .adm-prog-actions { flex-wrap: wrap; }
+
+  .adm-settings-grid { grid-template-columns: 1fr; gap: 16px; }
+  .adm-settings-card { padding: 20px; }
+
+  .adm-contact-detail { padding: 18px; }
+  .adm-detail-header { flex-wrap: wrap; }
+  .adm-detail-actions { flex-direction: column; }
+  .adm-detail-actions .adm-btn-primary { width: 100%; }
+
+  .dash-page { padding: 0 16px 32px !important; }
+  .dash-stats { grid-template-columns: 1fr 1fr !important; }
+  .dash-sections { grid-template-columns: 1fr !important; }
+  .dash-welcome { padding: 20px 16px !important; }
+  .dash-welcome-title { font-size: 20px !important; }
+  .dash-row-meta { display: none; }
 }
