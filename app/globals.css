@@ -739,6 +739,13 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 /* bridge layout (2-col) */
 .bridge { display: grid; grid-template-columns: 1fr 1fr; gap: 46px; align-items: center; }
 
+
+/* mobile screen (1-col) */
+@media (max-width: 768px) {
+  .bridge {
+    grid-template-columns: 1fr;
+  }
+}
 /* proc.final (green dot) — HTML uses class="proc final", not "proc final-step" */
 .proc.final .num { background: var(--forest); }
 
