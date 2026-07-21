@@ -26,11 +26,14 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
   const [form, setForm] = useState({
     title: "", domainCode: "", slug: "", tag: "Programme", sceneClass: "s-auto",
     shortDesc: "", lead: "", overview: "", feeTotal: "",
-    skills: [], hiringIndustries: [], published: false, metaTitle: "", metaDesc: "",
+    skills: [], hiringIndustries: [], equipment: [], software: [], certification: "",
+    published: false, metaTitle: "", metaDesc: "",
     quickStats: QS_DEFAULTS, roles: [], projects: [], feeSteps: [], salaryBands: [],
     ...initial,
     skills: initial.skills ? initial.skills.join(", ") : "",
     hiringIndustries: initial.hiringIndustries ? initial.hiringIndustries.join(", ") : "",
+    equipment: initial.equipment ? initial.equipment.join(", ") : "",
+    software: initial.software ? initial.software.join(", ") : "",
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -43,6 +46,8 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
       ...form,
       skills: typeof form.skills === "string" ? form.skills.split(",").map((s) => s.trim()).filter(Boolean) : form.skills,
       hiringIndustries: typeof form.hiringIndustries === "string" ? form.hiringIndustries.split(",").map((s) => s.trim()).filter(Boolean) : form.hiringIndustries,
+      equipment: typeof form.equipment === "string" ? form.equipment.split(",").map((s) => s.trim()).filter(Boolean) : form.equipment,
+      software: typeof form.software === "string" ? form.software.split(",").map((s) => s.trim()).filter(Boolean) : form.software,
     };
     const url = isEdit ? `/api/programmes/${initial._id}` : "/api/programmes";
     const method = isEdit ? "PUT" : "POST";
@@ -177,6 +182,24 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
       <div style={S.section}>
         <h3 style={S.sh}>Hiring Industries (comma separated)</h3>
         <textarea style={S.textarea} value={form.hiringIndustries} onChange={(e) => set("hiringIndustries", e.target.value)} placeholder="Automotive, FMCG and packaging, Pharmaceuticals, Steel and metals…" />
+      </div>
+
+      {/* Equipment */}
+      <div style={S.section}>
+        <h3 style={S.sh}>Equipment (comma separated)</h3>
+        <textarea style={S.textarea} value={form.equipment} onChange={(e) => set("equipment", e.target.value)} placeholder="PLC trainer rigs, HMI panels, VFD and motor sets…" />
+      </div>
+
+      {/* Software */}
+      <div style={S.section}>
+        <h3 style={S.sh}>Software (comma separated)</h3>
+        <textarea style={S.textarea} value={form.software} onChange={(e) => set("software", e.target.value)} placeholder="PLC programming suites, SCADA software, HMI tools…" />
+      </div>
+
+      {/* Certification */}
+      <div style={S.section}>
+        <h3 style={S.sh}>Certification</h3>
+        <textarea style={{ ...S.textarea, minHeight: "80px" }} value={form.certification} onChange={(e) => set("certification", e.target.value)} placeholder="Finish the programme and you get a Veritas by IQgrads certification…" />
       </div>
 
       {/* Salary */}

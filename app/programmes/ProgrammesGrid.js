@@ -26,14 +26,15 @@ const STATIC_DOMAINS = [
   ["D-22","Advanced Manufacturing","Additive and next-gen processes.","s-robot"],
 ];
 
-export default function ProgrammesGrid({ dbProgrammes = [] }) {
+export default function ProgrammesGrid({ dbProgrammes = [], knownCodes = [] }) {
   // Build a map of domainCode -> db slug
   const dbMap = {};
   dbProgrammes.forEach((p) => { dbMap[p.domainCode] = p; });
+  const knownSet = new Set(knownCodes);
 
   return (
     <div className="prog-grid" id="progGrid">
-      {/* DB-published programmes first */}
+      {/* DB-published programmes */}
       {dbProgrammes.map((p) => (
         <Link className="prog-card" href={`/programmes/${p.slug}`} key={p._id}>
           <div className={`pc-img cine ${p.sceneClass || "s-auto"}`}><div className="ph"></div><div className="tint"></div></div>
@@ -49,8 +50,8 @@ export default function ProgrammesGrid({ dbProgrammes = [] }) {
         </Link>
       ))}
 
-      {/* Static cards for domains NOT yet in DB */}
-      {STATIC_DOMAINS.filter(([code]) => !dbMap[code]).map(([code, title, desc, cls]) => (
+      {/* Static cards only for domains with NO DB record at all */}
+      {STATIC_DOMAINS.filter(([code]) => !knownSet.has(code)).map(([code, title, desc, cls]) => (
         <Link className="prog-card" href="/programme" key={code}>
           <div className={`pc-img cine ${cls}`}><div className="ph"></div><div className="tint"></div></div>
           <div className="pc-body">

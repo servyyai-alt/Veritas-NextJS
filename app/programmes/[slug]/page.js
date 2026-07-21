@@ -8,6 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+export const revalidate = 0;
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   await connectDB();
@@ -132,6 +134,45 @@ export default async function ProgrammePage({ params }) {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Equipment & Software */}
+              {(prog.equipment?.length > 0 || prog.software?.length > 0) && (
+                <div className="pd-sec">
+                  <span className="eyebrow">Equipment &amp; software</span>
+                  <h2>You&apos;ll work on the real thing</h2>
+                  {prog.equipment?.length > 0 && (
+                    <>
+                      <p style={{ fontSize: "14px", marginBottom: "4px" }}><b style={{ fontFamily: "'Space Grotesk'", color: "var(--navy, #16294A)" }}>Equipment</b></p>
+                      <div className="tag-list" style={{ marginBottom: "18px" }}>
+                        {prog.equipment.map((t, i) => (
+                          <span className="tag" key={i}>{t}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  {prog.software?.length > 0 && (
+                    <>
+                      <p style={{ fontSize: "14px", marginBottom: "4px" }}><b style={{ fontFamily: "'Space Grotesk'", color: "var(--navy, #16294A)" }}>Software</b></p>
+                      <div className="tag-list">
+                        {prog.software.map((t, i) => (
+                          <span className="tag" key={i}>{t}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  <p className="gap-note" style={{ marginTop: "14px" }}>* Specific brands and software listed per actual lab inventory.</p>
+                </div>
+              )}
+
+              {/* Certification */}
+              {prog.certification && (
+                <div className="pd-sec">
+                  <span className="eyebrow">Certification</span>
+                  <h2>Recognised, competency-based</h2>
+                  <p>{prog.certification}</p>
+                  <p className="gap-note">* Confirm exact certification and Pearson wording before publishing.</p>
                 </div>
               )}
 

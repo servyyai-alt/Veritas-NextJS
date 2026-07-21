@@ -12,15 +12,18 @@ export const metadata = {
   description: "22 hands-on industry pathways built to globally recognised Pearson standards.",
 };
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 export default async function ProgrammesPage() {
   let dbProgrammes = [];
+  let knownCodes = [];
   try {
     await connectDB();
-    dbProgrammes = await Programme.find({ published: true }).sort({ createdAt: -1 })
+    dbProgrammes = await Programme.find({ published: true }).sort({ domainCode: 1 })
       .select("title slug domainCode shortDesc sceneClass").lean();
-  } catch { /* fallback to static grid */ }
+    const allProgrammes = await Programme.find({}, { domainCode: 1, _id: 0 }).lean();
+    knownCodes = allProgrammes.map((p) => p.domainCode);
+  } catch (e) { console.error("Programmes page DB error:", e); }
 
   return (
     <>
@@ -35,7 +38,7 @@ export default async function ProgrammesPage() {
         </section>
         <section className="block light-sec">
           <div className="wrap">
-            <ProgrammesGrid dbProgrammes={dbProgrammes.map(p => ({ ...p, _id: String(p._id) }))} />
+            <ProgrammesGrid dbProgrammes={dbProgrammes.map(p => ({ ...p, _id: String(p._id) }))} knownCodes={knownCodes} />
           </div>
         </section>
       </main>
