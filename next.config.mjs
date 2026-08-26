@@ -5,9 +5,7 @@ const nextConfig = {
       { protocol: "https", hostname: "**" },
     ],
   },
-  experimental: {
-    serverComponentsExternalPackages: ["mongoose"],
-  },
+  serverExternalPackages: ["mongoose"],
 };
 
 export default nextConfig;

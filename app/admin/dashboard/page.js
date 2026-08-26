@@ -86,6 +86,20 @@ const STAT_CARDS = [
     link: "/admin/contact",
   },
   {
+    key: "homepage",
+    label: "Homepage",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 11.5 12 4l9 7.5" />
+        <path d="M5 10.5V20h14v-9.5" />
+        <path d="M9 20v-6h6v6" />
+      </svg>
+    ),
+    color: "#2E6B4E",
+    gradient: "linear-gradient(135deg, #2E6B4E 0%, #3a8a64 100%)",
+    link: "/admin/homepage",
+  },
+  {
     key: "unread",
     label: "Unread",
     icon: (
@@ -101,14 +115,14 @@ const STAT_CARDS = [
 ];
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0 });
+  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0, homepage: 1 });
   const [recentContacts, setRecentContacts] = useState([]);
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const raf = requestAnimationFrame(() => setMounted(true));
     Promise.all([
       fetch("/api/programmes?all=1").then((r) => r.json()),
       fetch("/api/blogs").then((r) => r.json()),
@@ -127,6 +141,7 @@ export default function Dashboard() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   const pillStyle = (c) => ({

@@ -1834,6 +1834,27 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   color: #16294A; margin: 0; font-weight: 600;
 }
 .adm-settings-card-sub { font-size: 13px; color: #54607A; margin: 3px 0 0; }
+.adm-home-savebar {
+  position: fixed;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid #E6DFD3;
+  box-shadow: 0 -10px 30px -18px rgba(22,41,74,.28);
+}
+.adm-home-savebar-inner {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
 .adm-settings-field { margin-bottom: 16px; }
 .adm-settings-field label {
@@ -2024,4 +2045,13 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   .dash-welcome { padding: 20px 16px !important; }
   .dash-welcome-title { font-size: 20px !important; }
   .dash-row-meta { display: none; }
+}
+
+@media (max-width: 768px) {
+  .adm-home-savebar {
+    left: 0;
+  }
+  .adm-home-savebar-inner {
+    padding: 14px 16px;
+  }
 }
