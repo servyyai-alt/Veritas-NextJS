@@ -589,7 +589,7 @@ section.block { padding: 84px 0; }
 /* AI chatbot */
 .chatbot-launcher {
   position: fixed;
-  left: 22px;
+  right: 22px;
   bottom: 22px;
   z-index: 79;
   display: inline-flex;
@@ -620,44 +620,44 @@ section.block { padding: 84px 0; }
 }
 .chatbot-shell {
   position: fixed;
-  left: 22px;
+  right: 22px;
   bottom: 78px;
-  width: min(390px, calc(100vw - 32px));
-  height: min(72vh, 620px);
+  width: min(340px, calc(100vw - 32px));
+  height: min(58vh, 520px);
   z-index: 79;
   display: flex;
   flex-direction: column;
-  border-radius: 18px;
+  border-radius: 24px;
   overflow: hidden;
   background: #fff;
   border: 1px solid var(--line);
-  box-shadow: 0 24px 60px -24px rgba(22,41,74,.36);
+  box-shadow: 0 24px 52px -26px rgba(22,41,74,.34);
 }
 .chatbot-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 14px 12px;
+  padding: 12px 12px 10px;
   background: linear-gradient(135deg, #16294A 0%, #203d68 100%);
   color: #fff;
 }
 .chatbot-title {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 .chatbot-sub {
-  margin-top: 3px;
-  font-size: 11px;
+  margin-top: 2px;
+  font-size: 10px;
   opacity: .84;
   font-family: "IBM Plex Mono", monospace;
   letter-spacing: .03em;
   text-transform: uppercase;
 }
 .chatbot-close {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 999px;
   background: rgba(255,255,255,.12);
@@ -732,7 +732,7 @@ footer { background: var(--linen); color: var(--slate); padding: 56px 0 28px; bo
 .foot-bottom { display: flex; justify-content: space-between; margin-top: 42px; padding-top: 22px; border-top: 1px solid var(--line); font-family: "IBM Plex Mono"; font-size: 11.5px; flex-wrap: wrap; gap: 12px; }
 
 /* WhatsApp & Sticky */
-.wa { position: fixed; right: 22px; bottom: 22px; z-index: 80; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px -8px rgba(37,211,102,.6); }
+.wa { position: fixed; right: 22px; bottom: 96px; z-index: 80; width: 56px; height: 56px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px -8px rgba(37,211,102,.6); }
 .wa svg { width: 30px; height: 30px; color: #fff; }
 .sticky-cta { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; background: rgba(255,255,255,.96); backdrop-filter: blur(12px); border-top: 1px solid var(--line); transform: translateY(110%); transition: transform .4s var(--ease); display: none; box-shadow: 0 -10px 30px -20px rgba(22,41,74,.4); }
 .sticky-cta.show { transform: translateY(0); }
@@ -817,7 +817,7 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   .foot-grid { grid-template-columns: 1fr 1fr; }
   .foot-about { grid-column: 1 / -1; }
   .sticky-cta { display: block; }
-  .wa { bottom: 78px; }
+  .wa { bottom: 224px; }
   .a-related { grid-template-columns: 1fr; }
   .blog-grid { grid-template-columns: 1fr; }
   .study-abroad h2 { font-size: 32px; }
@@ -2155,15 +2155,16 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
     left: 0;
   }
   .chatbot-launcher {
-    left: 16px;
-    bottom: 86px;
+    right: 16px;
+    bottom: 144px;
     padding: 10px 14px 10px 10px;
   }
   .chatbot-shell {
-    left: 16px;
-    bottom: 150px;
+    right: 16px;
+    bottom: 208px;
     width: calc(100vw - 32px);
-    height: min(66vh, 560px);
+    height: min(62vh, 500px);
+    border-radius: 22px;
   }
 
   .dash-page { padding: 0 16px 32px !important; }

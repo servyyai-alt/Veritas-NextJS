@@ -52,10 +52,6 @@ export default function SiteChatbot() {
     return null;
   }
 
-  if (loading || !chatbotUrl) {
-    return null;
-  }
-
   return (
     <>
       <button
@@ -96,7 +92,21 @@ export default function SiteChatbot() {
           </div>
 
           <div className="chatbot-body">
-            {failed ? (
+            {loading ? (
+              <div className="chatbot-loading">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 1s linear infinite" }}>
+                  <path d="M21 12a9 9 0 11-6.219-8.56" />
+                </svg>
+                Loading chatbot…
+              </div>
+            ) : !chatbotUrl ? (
+              <div className="chatbot-error">
+                <p>Chatbot is not configured yet.</p>
+                <span style={{ color: "#54607A", fontSize: "13px", lineHeight: 1.5 }}>
+                  Add the CRM iframe URL in the admin panel to activate this widget.
+                </span>
+              </div>
+            ) : failed ? (
               <div className="chatbot-error">
                 <p>Unable to load the chatbot.</p>
                 <button
