@@ -1,4 +1,5 @@
 import "./globals.css";
+import SiteChatbot from "@/components/SiteChatbot";
 
 export const metadata = {
   title: "Veritas by IQgrads — Authorised Pearson Partner",
@@ -35,7 +36,10 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <SiteChatbot />
+      </body>
     </html>
   );
 }

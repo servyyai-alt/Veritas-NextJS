@@ -14,6 +14,7 @@ const NAV = [
   { href: "/admin/contact", label: "Contact Submissions", icon: "📬" },
   { href: "/admin/crm-settings", label: "Contact CRM", icon: "🔗" },
   { href: "/admin/counselling-crm", label: "Book Counselling CRM", icon: "📅" },
+  { href: "/admin/chatbot", label: "AI Chatbot", icon: "🤖" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
 

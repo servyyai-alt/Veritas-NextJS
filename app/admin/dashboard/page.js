@@ -156,6 +156,20 @@ const STAT_CARDS = [
     link: "/admin/faq",
   },
   {
+    key: "chatbot",
+    label: "AI Chatbot",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H8l-4 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        <path d="M8 11h8" />
+        <path d="M8 15h5" />
+      </svg>
+    ),
+    color: "#16294A",
+    gradient: "linear-gradient(135deg, #16294A 0%, #39557b 100%)",
+    link: "/admin/chatbot",
+  },
+  {
     key: "unread",
     label: "Unread",
     icon: (
@@ -171,7 +185,7 @@ const STAT_CARDS = [
 ];
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0, homepage: 1, whyPearson: 1, placement: 1, about: 1, faq: 1 });
+  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0, homepage: 1, whyPearson: 1, placement: 1, about: 1, faq: 1, chatbot: 1 });
   const [recentContacts, setRecentContacts] = useState([]);
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -196,6 +210,7 @@ export default function Dashboard() {
           placement: 1,
           about: 1,
           faq: 1,
+          chatbot: 1,
         });
         setRecentContacts(contacts.slice(0, 5));
         setRecentBlogs((blog.data || []).slice(0, 5));

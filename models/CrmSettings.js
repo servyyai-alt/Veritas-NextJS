@@ -4,6 +4,7 @@ const CrmSettingsSchema = new mongoose.Schema(
   {
     contactFormUrl: { type: String, default: "" },
     counsellingFormUrl: { type: String, default: "" },
+    chatbotUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );
