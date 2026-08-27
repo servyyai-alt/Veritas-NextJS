@@ -128,6 +128,20 @@ const STAT_CARDS = [
     link: "/admin/placement",
   },
   {
+    key: "about",
+    label: "About",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4" />
+        <path d="M12 8h.01" />
+      </svg>
+    ),
+    color: "#41506A",
+    gradient: "linear-gradient(135deg, #41506A 0%, #5d6f8c 100%)",
+    link: "/admin/about",
+  },
+  {
     key: "unread",
     label: "Unread",
     icon: (
@@ -143,7 +157,7 @@ const STAT_CARDS = [
 ];
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0, homepage: 1, whyPearson: 1, placement: 1 });
+  const [stats, setStats] = useState({ programmes: 0, blogs: 0, contacts: 0, unread: 0, homepage: 1, whyPearson: 1, placement: 1, about: 1 });
   const [recentContacts, setRecentContacts] = useState([]);
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,6 +180,7 @@ export default function Dashboard() {
           homepage: 1,
           whyPearson: 1,
           placement: 1,
+          about: 1,
         });
         setRecentContacts(contacts.slice(0, 5));
         setRecentBlogs((blog.data || []).slice(0, 5));
