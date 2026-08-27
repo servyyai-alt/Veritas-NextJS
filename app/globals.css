@@ -1835,14 +1835,16 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 }
 .adm-settings-card-sub { font-size: 13px; color: #54607A; margin: 3px 0 0; }
 .adm-home-savebar {
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 240px;
+  right: 0;
   z-index: 40;
   background: rgba(255,255,255,.96);
   backdrop-filter: blur(14px);
   border-top: 1px solid #E6DFD3;
   box-shadow: 0 -10px 30px -18px rgba(22,41,74,.28);
-  margin: 24px -32px 0;
+  margin: 0;
 }
 .adm-home-savebar-inner {
   max-width: 100%;
@@ -2037,6 +2039,9 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
   .adm-detail-header { flex-wrap: wrap; }
   .adm-detail-actions { flex-direction: column; }
   .adm-detail-actions .adm-btn-primary { width: 100%; }
+  .adm-home-savebar {
+    left: 0;
+  }
 
   .dash-page { padding: 0 16px 32px !important; }
   .dash-stats { grid-template-columns: 1fr 1fr !important; }
