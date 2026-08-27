@@ -8,6 +8,7 @@ const NAV = [
   { href: "/admin/why-pearson", label: "Why Pearson Content", icon: "🧭" },
   { href: "/admin/placement", label: "Placement Content", icon: "🧩" },
   { href: "/admin/about", label: "About Content", icon: "ℹ️" },
+  { href: "/admin/faq", label: "FAQ Content", icon: "❓" },
   { href: "/admin/programmes", label: "Programmes", icon: "🎓" },
   { href: "/admin/blogs", label: "Blogs", icon: "📝" },
   { href: "/admin/contact", label: "Contact Submissions", icon: "📬" },
