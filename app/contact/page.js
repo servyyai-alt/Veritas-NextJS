@@ -5,14 +5,20 @@ import RevealObserver from "@/components/RevealObserver";
 import ContactFormOrCrm from "./ContactFormOrCrm";
 import Link from "next/link";
 import Image from "next/image";
+import { loadContactContent } from "@/lib/contact-settings";
 
-export const metadata = {
-  title: "Contact — Veritas by IQgrads",
-  description:
-    "Talk to Veritas by IQgrads — graduates, parents and employers welcome. Book a free career consultation.",
-};
+export async function generateMetadata() {
+  const content = await loadContactContent();
 
-export default function Contact() {
+  return {
+    title: content.metadata.title,
+    description: content.metadata.description,
+  };
+}
+
+export default async function Contact() {
+  const content = await loadContactContent();
+
   return (
     <>
       <Navbar />
@@ -24,11 +30,8 @@ export default function Contact() {
               <span className="sep">/</span>
               <span>Contact</span>
             </div>
-            <h1>Talk to us</h1>
-            <p>
-              Graduate, parent or employer — we&apos;re glad you&apos;re here.
-              Quickest way to get going is a free consultation.
-            </p>
+            <h1>{content.hero.title}</h1>
+            <p>{content.hero.description}</p>
           </div>
         </section>
         <section className="block white-sec">
@@ -49,13 +52,13 @@ export default function Contact() {
                     />
                   </svg>
                 </div>
-                <b>Call us</b>
+                <b>{content.cards[0].label}</b>
                 <p>
-                  +91 00000 00000
+                  {content.cards[0].line1}
                   <br />
-                  <span className="gap-note">
-                    Placeholder — add real number
-                  </span>
+                  {content.cards[0].line2 ? (
+                    <span className="gap-note">{content.cards[0].line2}</span>
+                  ) : null}
                 </p>
               </div>
               <div className="cc">
@@ -74,11 +77,13 @@ export default function Contact() {
                     />
                   </svg>
                 </div>
-                <b>Email us</b>
+                <b>{content.cards[1].label}</b>
                 <p>
-                  hello@veritas.example
+                  {content.cards[1].line1}
                   <br />
-                  <span className="gap-note">Placeholder — add real email</span>
+                  {content.cards[1].line2 ? (
+                    <span className="gap-note">{content.cards[1].line2}</span>
+                  ) : null}
                 </p>
               </div>
               <div className="cc">
@@ -93,17 +98,15 @@ export default function Contact() {
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                 </div>
-                <b>Visit us</b>
-                <p>
-                  No 4, 3rd Floor, Swathi Complex, No 34, Venkatnarayana Road, Nandanam, Chennai 600035
-                </p>
+                <b>{content.cards[2].label}</b>
+                <p>{content.cards[2].line1}</p>
               </div>
             </div>
             <div className="book-grid">
               <div className="reveal">
-                <span className="eyebrow">Send a message</span>
+                <span className="eyebrow">{content.message.eyebrow}</span>
                 <h2 style={{ fontSize: "28px", marginTop: "14px" }}>
-                  We&apos;ll get back within one working day
+                  {content.message.title}
                 </h2>
                 <div className="book-points">
                   <div className="book-point">
@@ -120,8 +123,8 @@ export default function Contact() {
                       />
                     </svg>
                     <div>
-                      <b>For graduates &amp; parents</b>
-                      <span>Programme advice, fees and the path to a job.</span>
+                      <b>{content.message.points[0].title}</b>
+                      <span>{content.message.points[0].text}</span>
                     </div>
                   </div>
                   <div className="book-point">
@@ -138,10 +141,8 @@ export default function Contact() {
                       />
                     </svg>
                     <div>
-                      <b>For employers</b>
-                      <span>
-                        Hiring our graduates or co-designing training.
-                      </span>
+                      <b>{content.message.points[1].title}</b>
+                      <span>{content.message.points[1].text}</span>
                     </div>
                   </div>
                 </div>
@@ -154,8 +155,8 @@ export default function Contact() {
                     height={28}
                   />
                   <div>
-                    <b>Authorised Pearson Partner</b>
-                    <span>Globally trusted standard</span>
+                    <b>{content.trust.title}</b>
+                    <span>{content.trust.subtitle}</span>
                   </div>
                 </div>
               </div>
