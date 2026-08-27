@@ -6,15 +6,30 @@ import WhatsApp from "@/components/WhatsApp";
 import RevealObserver from "@/components/RevealObserver";
 import ProgrammesGrid from "./ProgrammesGrid";
 import Link from "next/link";
-
-export const metadata = {
-  title: "Programmes — Veritas by IQgrads",
-  description: "22 hands-on industry pathways built to globally recognised Pearson standards.",
-};
+import { loadProgrammesPageContent } from "@/lib/programmes-page-settings";
 
 export const revalidate = 0;
 
+export async function generateMetadata() {
+  const content = await loadProgrammesPageContent();
+
+  return {
+    title: content.metadata.title,
+    description: content.metadata.description,
+    alternates: { canonical: "https://www.veritasbyiqgrads.com/programmes" },
+    openGraph: {
+      type: "website",
+      title: content.metadata.title,
+      description: content.metadata.description,
+      url: "https://www.veritasbyiqgrads.com/programmes",
+      images: [{ url: "https://www.veritasbyiqgrads.com/assets/img/og-cover.jpg" }],
+    },
+    twitter: { card: "summary_large_image" },
+  };
+}
+
 export default async function ProgrammesPage() {
+  const content = await loadProgrammesPageContent();
   let dbProgrammes = [];
   let knownCodes = [];
   try {
@@ -31,9 +46,13 @@ export default async function ProgrammesPage() {
       <main id="main" tabIndex="-1">
         <section className="page-hero">
           <div className="wrap">
-            <div className="breadcrumb"><Link href="/">Home</Link><span className="sep">/</span><span>Programmes</span></div>
-            <h1>22 fields to train in. One standard the world trusts.</h1>
-            <p>All hands-on and built to Pearson&apos;s globally recognised standards. Pick one to see what you&apos;ll learn, what you&apos;ll build, what it costs, and how to join.</p>
+            <div className="breadcrumb">
+              <Link href="/">{content.hero.breadcrumbHome}</Link>
+              <span className="sep">/</span>
+              <span>{content.hero.breadcrumbCurrent}</span>
+            </div>
+            <h1>{content.hero.title}</h1>
+            <p>{content.hero.description}</p>
           </div>
         </section>
         <section className="block light-sec">
