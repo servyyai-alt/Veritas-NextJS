@@ -46,7 +46,7 @@ export default async function BlogPage() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         <section className="page-hero">
           <div className="wrap">
             <div className="breadcrumb">

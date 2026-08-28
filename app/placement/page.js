@@ -30,7 +30,7 @@ export default async function Placement() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
 
         <section className="hero cine s-place kb" style={{ minHeight: "540px" }}>
           <div className="ph"></div><div className="tint"></div>

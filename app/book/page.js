@@ -22,7 +22,7 @@ export default async function Book() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         <section className="block white-sec">
           <div className="wrap book-grid">
             <div className="reveal">

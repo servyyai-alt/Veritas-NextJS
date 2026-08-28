@@ -12,7 +12,7 @@ export default function BlogAutomationRoles() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         <section className="page-hero">
           <div className="wrap">
             <div className="breadcrumb"><Link href="/">Home</Link><span className="sep">/</span><Link href="/blog">Blog</Link><span className="sep">/</span><span>Industry</span></div>

@@ -29,7 +29,7 @@ export default async function BlogPost({ params }) {
     return (
       <>
         <Navbar />
-        <main id="main" tabIndex="-1">
+        <main id="main" tabIndex="-1" className="home-sans">
           <section className="page-hero">
             <div className="wrap">
               <div className="breadcrumb">
@@ -71,7 +71,7 @@ export default async function BlogPost({ params }) {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         <section className="page-hero">
           <div className="wrap">
             <div className="breadcrumb">
