@@ -2046,11 +2046,18 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 .adm-sidebar {
   width: 240px; background: #16294A; display: flex; flex-direction: column;
   flex-shrink: 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .adm-sidebar-head {
   padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1);
-  display: flex; align-items: flex-start; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 2; background: #16294A;
+}
+.adm-sidebar-brand-wrap {
+  display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto;
+}
+.adm-sidebar-brand-wrap .mark {
+  width: 38px; height: 38px; flex: 0 0 auto;
 }
 .adm-sidebar-brand {
   font-family: "Space Grotesk", sans-serif; font-weight: 700;
@@ -2079,6 +2086,7 @@ a.post-card:hover { transform: translateY(-5px); box-shadow: 0 24px 46px -28px r
 .adm-sidebar-icon { flex-shrink: 0; width: 20px; text-align: center; font-size: 15px; }
 .adm-sidebar-foot {
   padding: 16px 12px; border-top: 1px solid rgba(255,255,255,.1);
+  background: #16294A;
 }
 .adm-sidebar-logout:hover { background: rgba(255,255,255,.08); }
 

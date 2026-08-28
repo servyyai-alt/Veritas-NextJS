@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import BrandLogo from "../BrandLogo";
 
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "⊞" },
@@ -34,9 +35,12 @@ export default function AdminSidebar({ open, onClose }) {
   return (
     <aside className={`adm-sidebar ${open ? "adm-sidebar-open" : ""}`}>
       <div className="adm-sidebar-head">
-        <div>
-          <div className="adm-sidebar-brand">Veritas</div>
-          <div className="adm-sidebar-sub">Admin Panel</div>
+        <div className="adm-sidebar-brand-wrap">
+          <BrandLogo inverse />
+          <div>
+            <div className="adm-sidebar-brand">Veritas</div>
+            <div className="adm-sidebar-sub">Admin Panel</div>
+          </div>
         </div>
         <button className="adm-sidebar-close" onClick={onClose} aria-label="Close menu">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
