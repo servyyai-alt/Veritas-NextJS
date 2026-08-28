@@ -29,7 +29,7 @@ export default async function WhyPearson() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         <section className="hero cine s-pearson kb" style={{ minHeight: "520px" }}>
           <div className="ph"></div><div className="tint"></div>
           <div className="wrap hero-inner single">

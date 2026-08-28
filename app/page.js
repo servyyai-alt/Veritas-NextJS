@@ -30,7 +30,7 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <main id="main" tabIndex="-1">
+      <main id="main" tabIndex="-1" className="home-sans">
         {/* Hero */}
         <section className="hero cine s-hero kb">
           <div className="ph"></div><div className="tint"></div>
