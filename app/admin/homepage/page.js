@@ -237,6 +237,8 @@ export default function AdminHomepage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
+  const [uploadingCardImage, setUploadingCardImage] = useState(null);
   const [toast, setToast] = useState(null);
   const [mounted, setMounted] = useState(false);
 
@@ -296,6 +298,69 @@ export default function AdminHomepage() {
       arr.splice(index, 1);
       return next;
     });
+  };
+
+  const handleHeroImageUpload = async (file) => {
+    if (!file) return;
+
+    setToast(null);
+    setUploadingHeroImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!data.success || !data.url) {
+        setToast({
+          message: data.message || "Failed to upload image",
+          type: "error",
+        });
+        return;
+      }
+
+      updatePath(["hero", "backgroundImage"], data.url);
+      setToast({
+        message: "Hero image uploaded. Save changes to publish it.",
+        type: "success",
+      });
+    } catch {
+      setToast({ message: "Something went wrong", type: "error" });
+    } finally {
+      setUploadingHeroImage(false);
+    }
+  };
+
+  const handleCardImageUpload = async (section, index, file) => {
+    if (!file) return;
+
+    const uploadKey = `${section}-${index}`;
+    setToast(null);
+    setUploadingCardImage(uploadKey);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (!data.success || !data.url) {
+        setToast({ message: data.message || "Failed to upload image", type: "error" });
+        return;
+      }
+
+      updateArrayItem([section, "cards"], index, "backgroundImage", data.url);
+      setToast({ message: "Card image uploaded. Save changes to publish it.", type: "success" });
+    } catch {
+      setToast({ message: "Something went wrong", type: "error" });
+    } finally {
+      setUploadingCardImage(null);
+    }
   };
 
   const handleSave = async () => {
@@ -483,6 +548,154 @@ export default function AdminHomepage() {
             value={content.hero.sealSubtitle}
             onChange={(v) => updatePath(["hero", "sealSubtitle"], v)}
           />
+          <div
+            style={{
+              marginTop: "18px",
+              padding: "16px",
+              border: "1px solid #E6DFD3",
+              borderRadius: "14px",
+              background: "#FBFAF7",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "16px",
+                marginBottom: "14px",
+              }}
+            >
+              <div>
+                <h4
+                  style={{
+                    margin: 0,
+                    color: "#16294A",
+                    fontSize: "15px",
+                    fontFamily: "'Space Grotesk', sans-serif",
+                  }}
+                >
+                  Hero background image
+                </h4>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    color: "#54607A",
+                    fontSize: "12px",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  This image fills the homepage hero behind the copy and readout
+                  card.
+                </p>
+              </div>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.2fr .8fr",
+                gap: "14px",
+                alignItems: "start",
+              }}
+            >
+              <div>
+                <InputField
+                  label="Image URL"
+                  value={content.hero.backgroundImage}
+                  onChange={(v) => updatePath(["hero", "backgroundImage"], v)}
+                  placeholder="/uploads/hero-bg.jpg"
+                  help="You can paste a local upload path or a full remote image URL."
+                />
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  <label
+                    className="adm-btn-ghost"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                      overflow: "hidden",
+                      cursor: uploadingHeroImage ? "not-allowed" : "pointer",
+                      opacity: uploadingHeroImage ? 0.6 : 1,
+                    }}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        handleHeroImageUpload(file);
+                      }}
+                      disabled={uploadingHeroImage}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        opacity: 0,
+                        cursor: uploadingHeroImage ? "not-allowed" : "pointer",
+                      }}
+                    />
+                    {uploadingHeroImage ? "Uploading..." : "Upload image"}
+                  </label>
+                  <button
+                    className="adm-btn-ghost"
+                    type="button"
+                    onClick={() => updatePath(["hero", "backgroundImage"], "")}
+                    disabled={uploadingHeroImage || saving || resetting}
+                  >
+                    Remove image
+                  </button>
+                </div>
+              </div>
+              <div
+                style={{
+                  minHeight: "150px",
+                  borderRadius: "14px",
+                  border: "1px solid #E6DFD3",
+                  overflow: "hidden",
+                  position: "relative",
+                  background: "#0b1830",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage: content.hero.backgroundImage
+                      ? `url(${JSON.stringify(content.hero.backgroundImage)})`
+                      : `url(${JSON.stringify("/scene-728428.svg")})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    transform: "scale(1.04)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background:
+                      "linear-gradient(118deg, rgba(11,21,40,.84), rgba(18,42,76,.5) 48%, rgba(138,36,52,.42))",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "flex-end",
+                    padding: "14px",
+                    color: "#fff",
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: "11px",
+                    letterSpacing: ".08em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Preview
+                </div>
+              </div>
+            </div>
+          </div>
         </SectionCard>
 
         <SectionCard
@@ -937,6 +1150,7 @@ export default function AdminHomepage() {
             onAdd={() =>
               addArrayItem(["labs", "cards"], {
                 cls: "",
+                backgroundImage: "",
                 tag: "",
                 h: "",
                 p: "",
@@ -961,6 +1175,20 @@ export default function AdminHomepage() {
                       updateArrayItem(["labs", "cards"], index, "cls", v)
                     }
                   />
+                  <InputField
+                    label="Image URL"
+                    value={item.backgroundImage}
+                    onChange={(v) => updateArrayItem(["labs", "cards"], index, "backgroundImage", v)}
+                    placeholder="/uploads/lab.jpg"
+                    help="Leave blank to use the selected scene class."
+                  />
+                  <div style={{ display: "flex", gap: "10px", alignItems: "end", flexWrap: "wrap" }}>
+                    <label className="adm-btn-ghost" style={{ position: "relative", overflow: "hidden", cursor: uploadingCardImage === `labs-${index}` ? "not-allowed" : "pointer", opacity: uploadingCardImage === `labs-${index}` ? 0.6 : 1 }}>
+                      <input type="file" accept="image/*" disabled={Boolean(uploadingCardImage)} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; handleCardImageUpload("labs", index, file); }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+                      {uploadingCardImage === `labs-${index}` ? "Uploading..." : "Upload image"}
+                    </label>
+                    <button className="adm-btn-ghost" type="button" onClick={() => updateArrayItem(["labs", "cards"], index, "backgroundImage", "")} disabled={Boolean(uploadingCardImage)}>Remove image</button>
+                  </div>
                   <InputField
                     label="Tag"
                     value={item.tag}
@@ -1034,6 +1262,7 @@ export default function AdminHomepage() {
                 h: "",
                 p: "",
                 cls: "",
+                backgroundImage: "",
               })
             }
             addLabel="Add domain"
@@ -1069,6 +1298,20 @@ export default function AdminHomepage() {
                       updateArrayItem(["domains", "cards"], index, "cls", v)
                     }
                   />
+                  <InputField
+                    label="Image URL"
+                    value={item.backgroundImage}
+                    onChange={(v) => updateArrayItem(["domains", "cards"], index, "backgroundImage", v)}
+                    placeholder="/uploads/domain.jpg"
+                    help="Leave blank to use the selected scene class."
+                  />
+                  <div style={{ display: "flex", gap: "10px", alignItems: "end", flexWrap: "wrap" }}>
+                    <label className="adm-btn-ghost" style={{ position: "relative", overflow: "hidden", cursor: uploadingCardImage === `domains-${index}` ? "not-allowed" : "pointer", opacity: uploadingCardImage === `domains-${index}` ? 0.6 : 1 }}>
+                      <input type="file" accept="image/*" disabled={Boolean(uploadingCardImage)} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; handleCardImageUpload("domains", index, file); }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+                      {uploadingCardImage === `domains-${index}` ? "Uploading..." : "Upload image"}
+                    </label>
+                    <button className="adm-btn-ghost" type="button" onClick={() => updateArrayItem(["domains", "cards"], index, "backgroundImage", "")} disabled={Boolean(uploadingCardImage)}>Remove image</button>
+                  </div>
                   <TextAreaField
                     label="Body"
                     value={item.p}

@@ -50,7 +50,7 @@ export default function Footer() {
             <h5>Programmes</h5>
             <Link href="/programme">Industrial Automation</Link>
             <Link href="/programmes">All 22 pathways</Link>
-            <Link href="/placement">Placement support</Link>
+            {/* <Link href="/placement">Placement support</Link> */}
           </div>
           <div className="foot-col">
             <h5>Get started</h5>

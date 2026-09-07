@@ -26,13 +26,16 @@ export async function generateMetadata() {
 
 export default async function Home() {
   const content = await loadHomepageContent();
+  const heroBackgroundStyle = content.hero.backgroundImage
+    ? { "--img": `url(${JSON.stringify(content.hero.backgroundImage)})` }
+    : undefined;
 
   return (
     <>
       <Navbar />
       <main id="main" tabIndex="-1" className="home-sans">
         {/* Hero */}
-        <section className="hero cine s-hero kb">
+        <section className="hero cine s-hero kb" style={heroBackgroundStyle}>
           <div className="ph"></div><div className="tint"></div>
           <div className="wrap hero-inner">
             <div>
@@ -183,7 +186,11 @@ export default async function Home() {
             </div>
             <div className="labs-grid">
               {content.labs.cards.map((lab, index) => (
-                <div className={`lab cine ${lab.cls} kb reveal`} key={`${lab.cls}-${index}`}>
+                <div
+                  className={`lab cine ${lab.cls} kb reveal`}
+                  style={lab.backgroundImage ? { "--img": `url(${JSON.stringify(lab.backgroundImage)})` } : undefined}
+                  key={`${lab.cls}-${index}`}
+                >
                   <div className="ph"></div><div className="tint"></div>
                   <div className="lab-cap">
                     <span className="lab-tag">{lab.tag}</span>
@@ -207,7 +214,10 @@ export default async function Home() {
             <div className="dom-grid">
               {content.domains.cards.map((d, index) => (
                 <Link className="dom reveal" href="/programme" key={`${d.num}-${index}`}>
-                  <div className={`dom-img cine ${d.cls}`}><div className="ph"></div><div className="tint"></div></div>
+                  <div
+                    className={`dom-img cine ${d.cls}`}
+                    style={d.backgroundImage ? { "--img": `url(${JSON.stringify(d.backgroundImage)})` } : undefined}
+                  ><div className="ph"></div><div className="tint"></div></div>
                   <div className="dom-body">
                     <div className="dnum">{d.num}</div>
                     <h4>{d.h}</h4>
