@@ -32,7 +32,15 @@ export default async function Placement() {
       <Navbar />
       <main id="main" tabIndex="-1" className="home-sans">
 
-        <section className="hero cine s-place kb" style={{ minHeight: "540px" }}>
+        <section
+          className="hero cine s-place kb"
+          style={{
+            minHeight: "540px",
+            ...(content.hero.backgroundImage
+              ? { "--img": `url(${JSON.stringify(content.hero.backgroundImage)})` }
+              : {}),
+          }}
+        >
           <div className="ph"></div><div className="tint"></div>
           <div className="wrap hero-inner single">
             <span className="eyebrow on-img">{content.hero.eyebrow}</span>
