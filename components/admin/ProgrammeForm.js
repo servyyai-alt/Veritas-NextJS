@@ -37,8 +37,31 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+
+    setError("");
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!data.success || !data.url) {
+        setError(data.message || "Image upload failed");
+        return;
+      }
+      set("image", data.url);
+    } catch {
+      setError("Image upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleSubmit = async () => {
     setError(""); setSaving(true);
@@ -94,6 +117,31 @@ export default function ProgrammeForm({ initial = {}, isEdit = false }) {
             <select style={S.select} value={form.sceneClass} onChange={(e) => set("sceneClass", e.target.value)}>
               {SCENES.map((s) => <option key={s}>{s}</option>)}
             </select>
+          </div>
+          <div style={{ ...S.field, gridColumn: "1 / -1" }}>
+            <label style={S.label}>Programme Image</label>
+            <input
+              style={S.input}
+              value={form.image || ""}
+              onChange={(e) => set("image", e.target.value)}
+              placeholder="https://res.cloudinary.com/..."
+            />
+            <div style={{ display: "flex", gap: "10px", marginTop: "8px", flexWrap: "wrap" }}>
+              <label style={{ ...S.btnSec, display: "inline-flex", alignItems: "center", marginLeft: 0, position: "relative", overflow: "hidden", opacity: uploadingImage ? 0.6 : 1 }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingImage}
+                  onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; handleImageUpload(file); }}
+                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }}
+                />
+                {uploadingImage ? "Uploading..." : "Upload to Cloudinary"}
+              </label>
+              <button type="button" onClick={() => set("image", "")} disabled={uploadingImage} style={S.btnSec}>Remove image</button>
+            </div>
+            <div style={{ marginTop: "6px", color: "#54607A", fontSize: "12px" }}>
+              This image appears on the programmes grid and this programme&apos;s detail-page hero. Leave blank to use the scene class.
+            </div>
           </div>
         </div>
         <div style={S.field}><label style={S.label}>Short Description (card)</label><input style={S.input} value={form.shortDesc} onChange={(e) => set("shortDesc", e.target.value)} /></div>

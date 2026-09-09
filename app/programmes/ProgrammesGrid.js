@@ -37,7 +37,10 @@ export default function ProgrammesGrid({ dbProgrammes = [], knownCodes = [] }) {
       {/* DB-published programmes */}
       {dbProgrammes.map((p) => (
         <Link className="prog-card" href={`/programmes/${p.slug}`} key={p._id}>
-          <div className={`pc-img cine ${p.sceneClass || "s-auto"}`}><div className="ph"></div><div className="tint"></div></div>
+          <div
+            className={`pc-img cine ${p.sceneClass || "s-auto"}`}
+            style={p.image ? { "--img": `url(${JSON.stringify(p.image)})` } : undefined}
+          ><div className="ph"></div><div className="tint"></div></div>
           <div className="pc-body">
             <div className="pc-top">
               <span className="pc-tag">Programme</span>

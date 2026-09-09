@@ -45,7 +45,10 @@ export default async function ProgrammePage({ params }) {
       <Navbar />
       <main id="main" tabIndex="-1">
         {/* Hero */}
-        <section className={`pd-hero cine ${prog.sceneClass || "s-auto"} kb`}>
+        <section
+          className={`pd-hero cine ${prog.sceneClass || "s-auto"} kb`}
+          style={prog.image ? { "--img": `url(${JSON.stringify(prog.image)})` } : undefined}
+        >
           <div className="ph"></div>
           <div className="tint"></div>
           <div className="wrap pd-hero-inner">

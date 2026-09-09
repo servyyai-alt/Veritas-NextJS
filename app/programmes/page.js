@@ -35,7 +35,7 @@ export default async function ProgrammesPage() {
   try {
     await connectDB();
     dbProgrammes = await Programme.find({ published: true }).sort({ domainCode: 1 })
-      .select("title slug domainCode shortDesc sceneClass").lean();
+      .select("title slug domainCode shortDesc sceneClass image").lean();
     const allProgrammes = await Programme.find({}, { domainCode: 1, _id: 0 }).lean();
     knownCodes = allProgrammes.map((p) => p.domainCode);
   } catch (e) { console.error("Programmes page DB error:", e); }
