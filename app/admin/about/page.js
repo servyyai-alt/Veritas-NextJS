@@ -146,6 +146,7 @@ export default function AdminAbout() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
   const [toast, setToast] = useState(null);
   const [mounted, setMounted] = useState(false);
 
@@ -196,6 +197,29 @@ export default function AdminAbout() {
       arr.splice(index, 1);
       return next;
     });
+  };
+
+  const handleHeroImageUpload = async (file) => {
+    if (!file) return;
+
+    setToast(null);
+    setUploadingHeroImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!data.success || !data.url) {
+        setToast({ message: data.message || "Failed to upload image", type: "error" });
+        return;
+      }
+      updatePath(["hero", "backgroundImage"], data.url);
+      setToast({ message: "Hero image uploaded. Save changes to publish it.", type: "success" });
+    } catch {
+      setToast({ message: "Something went wrong", type: "error" });
+    } finally {
+      setUploadingHeroImage(false);
+    }
   };
 
   const handleSave = async () => {
@@ -282,13 +306,59 @@ export default function AdminAbout() {
           </div>
         </SectionCard>
 
-        <SectionCard fullWidth title="Hero" description="The top About page section.">
+        <SectionCard fullWidth title="Hero" description="The Home-style cinematic About hero, including its background image and readiness panel.">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "14px" }}>
             <InputField label="Breadcrumb home" value={content.hero.breadcrumbHome} onChange={(v) => updatePath(["hero", "breadcrumbHome"], v)} />
             <InputField label="Breadcrumb current" value={content.hero.breadcrumbCurrent} onChange={(v) => updatePath(["hero", "breadcrumbCurrent"], v)} />
+            <InputField label="Eyebrow" value={content.hero.eyebrow} onChange={(v) => updatePath(["hero", "eyebrow"], v)} />
+            <InputField label="Title prefix" value={content.hero.titlePrefix} onChange={(v) => updatePath(["hero", "titlePrefix"], v)} />
+            <InputField label="Accent line" value={content.hero.titleAccent} onChange={(v) => updatePath(["hero", "titleAccent"], v)} />
+            <InputField label="Primary CTA" value={content.hero.primaryCta} onChange={(v) => updatePath(["hero", "primaryCta"], v)} />
+            <InputField label="Secondary CTA" value={content.hero.secondaryCta} onChange={(v) => updatePath(["hero", "secondaryCta"], v)} />
+            <InputField label="Seal title" value={content.hero.sealTitle} onChange={(v) => updatePath(["hero", "sealTitle"], v)} />
+            <InputField label="Seal subtitle" value={content.hero.sealSubtitle} onChange={(v) => updatePath(["hero", "sealSubtitle"], v)} />
           </div>
-          <TextAreaField label="Hero title" value={content.hero.title} onChange={(v) => updatePath(["hero", "title"], v)} rows={3} />
-          <TextAreaField label="Hero description" value={content.hero.description} onChange={(v) => updatePath(["hero", "description"], v)} rows={4} />
+          <TextAreaField label="Hero lead" value={content.hero.lead} onChange={(v) => updatePath(["hero", "lead"], v)} rows={4} />
+          <div style={{ marginTop: "18px", padding: "16px", border: "1px solid #E6DFD3", borderRadius: "14px", background: "#FBFAF7" }}>
+            <InputField
+              label="Hero background image URL"
+              value={content.hero.backgroundImage}
+              onChange={(v) => updatePath(["hero", "backgroundImage"], v)}
+              placeholder="https://res.cloudinary.com/..."
+              help="This image fills the About hero. Leave blank to use the default scene."
+            />
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <label className="adm-btn-ghost" style={{ display: "inline-flex", alignItems: "center", position: "relative", overflow: "hidden", cursor: uploadingHeroImage ? "not-allowed" : "pointer", opacity: uploadingHeroImage ? 0.6 : 1 }}>
+                <input type="file" accept="image/*" disabled={uploadingHeroImage} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; handleHeroImageUpload(file); }} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+                {uploadingHeroImage ? "Uploading..." : "Upload to Cloudinary"}
+              </label>
+              <button className="adm-btn-ghost" type="button" onClick={() => updatePath(["hero", "backgroundImage"], "")} disabled={uploadingHeroImage || saving || resetting}>Remove image</button>
+            </div>
+          </div>
+          <div style={{ marginTop: "18px" }}>
+            <h4 style={{ margin: "0 0 12px", color: "#16294A", fontSize: "15px", fontFamily: "'Space Grotesk', sans-serif" }}>Readiness panel</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "12px" }}>
+              <InputField label="Panel title" value={content.hero.readout.title} onChange={(v) => updatePath(["hero", "readout", "title"], v)} />
+              <InputField label="Panel name" value={content.hero.readout.name} onChange={(v) => updatePath(["hero", "readout", "name"], v)} />
+              <InputField label="Status label" value={content.hero.readout.verifiedLabel} onChange={(v) => updatePath(["hero", "readout", "verifiedLabel"], v)} />
+              <InputField label="Paper legend" value={content.hero.readout.legendOnPaper} onChange={(v) => updatePath(["hero", "readout", "legendOnPaper"], v)} />
+              <InputField label="Result legend" value={content.hero.readout.legendAfter} onChange={(v) => updatePath(["hero", "readout", "legendAfter"], v)} />
+              <InputField label="Panel footnote" value={content.hero.readout.footnote} onChange={(v) => updatePath(["hero", "readout", "footnote"], v)} />
+            </div>
+            <ArraySection title="Panel metrics" description="Edit the bars shown in the About hero panel." items={content.hero.readout.metrics} onAdd={() => addArrayItem(["hero", "readout", "metrics"], { label: "", val: "", paper: "40%", floor: "80%" })} addLabel="Add metric">
+              {{
+                remove: (index) => removeArrayItem(["hero", "readout", "metrics"], index),
+                render: (item, index) => (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "12px" }}>
+                    <InputField label="Label" value={item.label} onChange={(v) => updateArrayItem(["hero", "readout", "metrics"], index, "label", v)} />
+                    <InputField label="Value" value={item.val} onChange={(v) => updateArrayItem(["hero", "readout", "metrics"], index, "val", v)} />
+                    <InputField label="Paper width" value={item.paper} onChange={(v) => updateArrayItem(["hero", "readout", "metrics"], index, "paper", v)} help="Example: 70%" />
+                    <InputField label="Result width" value={item.floor} onChange={(v) => updateArrayItem(["hero", "readout", "metrics"], index, "floor", v)} help="Example: 85%" />
+                  </div>
+                ),
+              }}
+            </ArraySection>
+          </div>
         </SectionCard>
 
         <SectionCard fullWidth title="Gap Section" description="The first cards section on the page.">
