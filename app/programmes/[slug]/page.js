@@ -67,8 +67,10 @@ export default async function ProgrammePage({ params }) {
             <div className="pd-quickstats">
               {qs.map((q, i) => (
                 <div className="pd-qs" key={i}>
-                  <div className="qn">{q.value}</div>
-                  <div className="ql">{q.label}</div>
+                  <div className="qn" style={{ paddingLeft: "16px" }}>
+                    {q.value}
+                  </div>
+                  <div className="ql" style={{ paddingLeft: "16px" }}>{q.label}</div>
                 </div>
               ))}
             </div>

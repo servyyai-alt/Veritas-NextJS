@@ -48,12 +48,12 @@ export default async function Placement() {
             <p className="lead">{content.hero.lead}</p>
             <div className="hero-cta">
               <Link className="btn btn-primary" href="/book">{content.hero.primaryCta} <span className="arrow">→</span></Link>
-              <Link className="btn btn-light" href="/placement">{content.hero.secondaryCta}</Link>
+              <Link className="btn btn-light" href="#assurance">{content.hero.secondaryCta}</Link>
             </div>
           </div>
         </section>
 
-        <section className="block light-sec">
+        <section id="assurance" className="block light-sec">
           <div className="wrap assure">
             <div className="assure-copy reveal">
               <span className="eyebrow">{content.assurance.eyebrow}</span>
