@@ -30,7 +30,15 @@ export default async function WhyPearson() {
     <>
       <Navbar />
       <main id="main" tabIndex="-1" className="home-sans">
-        <section className="hero cine s-pearson kb" style={{ minHeight: "520px" }}>
+        <section
+          className="hero cine s-pearson kb"
+          style={{
+            minHeight: "520px",
+            ...(content.hero.backgroundImage
+              ? { "--img": `url(${JSON.stringify(content.hero.backgroundImage)})` }
+              : {}),
+          }}
+        >
           <div className="ph"></div><div className="tint"></div>
           <div className="wrap hero-inner single">
             <span className="eyebrow on-img">{content.hero.eyebrow}</span>

@@ -153,6 +153,7 @@ export default function AdminWhyPearson() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
   const [toast, setToast] = useState(null);
   const [mounted, setMounted] = useState(false);
 
@@ -212,6 +213,29 @@ export default function AdminWhyPearson() {
       arr.splice(index, 1);
       return next;
     });
+  };
+
+  const handleHeroImageUpload = async (file) => {
+    if (!file) return;
+
+    setToast(null);
+    setUploadingHeroImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!data.success || !data.url) {
+        setToast({ message: data.message || "Failed to upload image", type: "error" });
+        return;
+      }
+      updatePath(["hero", "backgroundImage"], data.url);
+      setToast({ message: "Hero image uploaded. Save changes to publish it.", type: "success" });
+    } catch {
+      setToast({ message: "Something went wrong", type: "error" });
+    } finally {
+      setUploadingHeroImage(false);
+    }
   };
 
   const handleSave = async () => {
@@ -326,6 +350,35 @@ export default function AdminWhyPearson() {
             onChange={(v) => updatePath(["hero", "lead"], v)}
             rows={5}
           />
+          <div style={{ marginTop: "18px", padding: "16px", border: "1px solid #E6DFD3", borderRadius: "14px", background: "#FBFAF7" }}>
+            <InputField
+              label="Hero background image URL"
+              value={content.hero.backgroundImage}
+              onChange={(v) => updatePath(["hero", "backgroundImage"], v)}
+              placeholder="https://res.cloudinary.com/..."
+              help="This image fills the Why Pearson hero. Leave blank to use the default Pearson scene."
+            />
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <label className="adm-btn-ghost" style={{ display: "inline-flex", alignItems: "center", position: "relative", overflow: "hidden", cursor: uploadingHeroImage ? "not-allowed" : "pointer", opacity: uploadingHeroImage ? 0.6 : 1 }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingHeroImage}
+                  onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; handleHeroImageUpload(file); }}
+                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }}
+                />
+                {uploadingHeroImage ? "Uploading..." : "Upload to Cloudinary"}
+              </label>
+              <button
+                className="adm-btn-ghost"
+                type="button"
+                onClick={() => updatePath(["hero", "backgroundImage"], "")}
+                disabled={uploadingHeroImage || saving || resetting}
+              >
+                Remove image
+              </button>
+            </div>
+          </div>
         </SectionCard>
 
         <SectionCard fullWidth title="Who is Pearson" description="The four cards and supporting note in the first body section.">
