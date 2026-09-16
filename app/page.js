@@ -45,6 +45,11 @@ export default async function Home() {
               <div className="hero-cta">
                 <Link className="btn btn-primary" href="/book">{content.hero.primaryCta} <span className="arrow">→</span></Link>
                 <Link className="btn btn-light" href="/why-pearson">{content.hero.secondaryCta}</Link>
+                {content.brochure.id && (
+                  <a className="btn btn-light" href="/api/brochure" download={content.brochure.filename}>
+                    Download brochure (PDF) <span aria-hidden="true">↓</span>
+                  </a>
+                )}
               </div>
               <div className="hero-seal">
                 <div className="pseal on-img">

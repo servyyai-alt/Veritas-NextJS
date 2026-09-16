@@ -238,6 +238,7 @@ export default function AdminHomepage() {
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
+  const [uploadingBrochure, setUploadingBrochure] = useState(false);
   const [uploadingCardImage, setUploadingCardImage] = useState(null);
   const [toast, setToast] = useState(null);
   const [mounted, setMounted] = useState(false);
@@ -363,6 +364,29 @@ export default function AdminHomepage() {
     }
   };
 
+  const handleBrochureUpload = async (file) => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".pdf") || !file.size || file.size > 4 * 1024 * 1024) {
+      setToast({ message: "Please select a non-empty PDF up to 4 MB", type: "error" });
+      return;
+    }
+    setUploadingBrochure(true);
+    setToast(null);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/admin/brochure", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Brochure upload failed");
+      updatePath(["brochure"], data.brochure);
+      setToast({ message: "Brochure uploaded. Save changes to publish it.", type: "success" });
+    } catch (error) {
+      setToast({ message: error.message || "Brochure upload failed. Please try again.", type: "error" });
+    } finally {
+      setUploadingBrochure(false);
+    }
+  };
+
   const handleSave = async () => {
     setToast(null);
     setSaving(true);
@@ -452,7 +476,7 @@ export default function AdminHomepage() {
         <SectionCard
           fullWidth
           title="Publish notes"
-          description="This editor updates the homepage text only. The page layout, spacing, and design stay the same."
+          description="Manage homepage text, images, and the downloadable brochure."
         >
           <div
             style={{
@@ -491,6 +515,40 @@ export default function AdminHomepage() {
               onChange={(v) => updatePath(["metadata", "description"], v)}
               placeholder="Homepage description"
             />
+          </div>
+        </SectionCard>
+
+        <SectionCard
+          fullWidth
+          title="Brochure"
+          description="Upload a PDF for visitors to download from the homepage. Save changes to publish or remove it."
+        >
+          <div className="adm-settings-field">
+            <label htmlFor="homepage-brochure">{content.brochure.id ? "Replace brochure" : "Upload brochure"}</label>
+            <input
+              id="homepage-brochure"
+              type="file"
+              accept="application/pdf,.pdf"
+              disabled={uploadingBrochure || saving || resetting || loading}
+              aria-describedby="brochure-help"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                handleBrochureUpload(file);
+              }}
+            />
+            <p id="brochure-help">PDF only, up to 4 MB.</p>
+            <p role="status">{uploadingBrochure ? "Uploading brochure…" : content.brochure.filename || "No brochure uploaded."}</p>
+            {content.brochure.id && (
+              <button
+                type="button"
+                className="adm-btn-ghost"
+                disabled={uploadingBrochure || saving || resetting}
+                onClick={() => updatePath(["brochure"], { id: "", filename: "" })}
+              >
+                Remove brochure
+              </button>
+            )}
           </div>
         </SectionCard>
 
@@ -1460,7 +1518,7 @@ export default function AdminHomepage() {
             <button
               className="adm-btn-primary"
               onClick={handleSave}
-              disabled={saving || loading || !dirty}
+              disabled={saving || resetting || loading || uploadingBrochure || !dirty}
               style={{
                 opacity: saving || loading || !dirty ? 0.6 : 1,
                 cursor: saving || loading || !dirty ? "not-allowed" : "pointer",
@@ -1471,7 +1529,7 @@ export default function AdminHomepage() {
             <button
               className="adm-btn-danger"
               onClick={handleReset}
-              disabled={resetting || loading}
+              disabled={resetting || saving || loading || uploadingBrochure}
               style={{
                 opacity: resetting || loading ? 0.6 : 1,
                 cursor: resetting || loading ? "not-allowed" : "pointer",
