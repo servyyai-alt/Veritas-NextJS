@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const fs = require("fs");
-const path = require("path");
-
-const envPath = path.resolve(__dirname, "../.env.local");
-const envRaw = fs.readFileSync(envPath, "utf8");
-for (const line of envRaw.split("\n")) {
-  const m = line.match(/^([A-Z_]+)=(.+)/);
-  if (m) process.env[m[1]] = m[2].trim();
+// Node 22 loads local defaults only when the file exists; injected values win.
+const { existsSync } = require("node:fs");
+const { resolve } = require("node:path");
+const envPath = resolve(__dirname, "../.env.local");
+if (existsSync(envPath)) process.loadEnvFile(envPath);
+for (const name of ["MONGODB_URI", "ADMIN_EMAIL", "ADMIN_PASSWORD"]) {
+  if (!process.env[name]) throw new Error(`${name} is required for seeding`);
 }
+
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) { console.error("No MONGODB_URI in .env.local"); process.exit(1); }
 
@@ -1323,8 +1323,8 @@ async function seed() {
   console.log(`\nProgrammes: ${inserted} inserted, ${updated} updated.\n`);
 
   // Upsert admin
-  const adminEmail = (process.env.ADMIN_EMAIL || "admin@veritas.com").toLowerCase();
-  const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
+  const adminEmail = (process.env.ADMIN_EMAIL).toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
   const existingAdmin = await Admin.findOne({ email: adminEmail });
   if (existingAdmin) {
     console.log(`Admin (${adminEmail}) already exists — skipped.\n`);
@@ -1337,7 +1337,7 @@ async function seed() {
       password: hashed,
       role: "admin",
     });
-    console.log(`Admin seeded: ${adminEmail} / ${adminPassword}\n`);
+    console.log(`Admin seeded: ${adminEmail}\n`);
   }
 
   await mongoose.disconnect();

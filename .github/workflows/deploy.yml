@@ -1,0 +1,56 @@
+name: Deploy to EC2
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: veritas-production
+  cancel-in-progress: false
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: veritas-fullstack
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push latest and commit images
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          docker build --platform linux/amd64 -t "$REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA" -t "$REGISTRY/$ECR_REPOSITORY:latest" .
+          docker push "$REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+          docker push "$REGISTRY/$ECR_REPOSITORY:latest"
+      - name: Deploy over verified SSH
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ vars.EC2_SSH_KNOWN_HOSTS }}
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$SSH_KNOWN_HOSTS"
+          [[ "$EC2_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+          [[ "$EC2_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/veritas"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/veritas" "$HOME/.ssh/known_hosts"
+          trap 'rm -f "$HOME/.ssh/veritas"' EXIT
+          ssh_args=(-i "$HOME/.ssh/veritas" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
+          scp "${ssh_args[@]}" docker-compose.yml deploy/deploy.sh "$EC2_USER@$EC2_HOST:/opt/veritas/"
+          ssh "${ssh_args[@]}" "$EC2_USER@$EC2_HOST" "bash /opt/veritas/deploy.sh '$REGISTRY' '$GITHUB_SHA'"

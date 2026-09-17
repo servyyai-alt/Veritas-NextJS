@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Safe environment template and operational artifacts
+!.env.example
+*.log
+logs/
+dist/
+*.key
+*.ppk
+previous-image.txt*
+.deploy.lock
