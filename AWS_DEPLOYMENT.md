@@ -10,7 +10,7 @@ One Next.js 16.2.10 App Router container serves UI and API. No AWS resources are
 
 ## Environment audit
 
-No application variables or secrets are required during Docker build. `.env*` never enters the build context. Runtime values live only in `/opt/veritas/.env`, mode 600. Use `.env.example` as a template. Container startup rejects a missing MongoDB URI, a JWT secret shorter than 32 characters, and known template placeholders.
+No application variables or secrets are required during Docker build. `.env*` never enters the build context. Runtime values live only in `/var/www/veritas/.env`, mode 600. Use `.env.example` as a template. Container startup rejects a missing MongoDB URI, a JWT secret shorter than 32 characters, and known template placeholders.
 
 | Variable | Classification | Required / purpose |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ No application variables or secrets are required during Docker build. `.env*` ne
 | `NEXT_TELEMETRY_DISABLED` | Build/runtime non-secret | Docker sets `1`; not an application secret |
 | `NEXT_PUBLIC_APP_URL` | Browser/build-time category, **unused** | Found in local env files; no code references it; omit from production |
 | `APP_IMAGE` | Deployment-only non-secret | Compose image override, saved in `.image.env`; not a browser/app setting |
-| `AWS_REGION`, `ECR_REPOSITORY` | CI/deployment-only non-secret | Fixed to `ap-south-1`, `veritas-fullstack` |
+| `AWS_REGION`, `ECR_REPOSITORY` | CI/deployment-only non-secret | Fixed to `us-east-1`, `veritas-fullstack` |
 
 No active `NEXT_PUBLIC_*` variables exist. Future browser variables would be public and baked into the build; never put database, JWT, authentication, SMTP, or private API credentials there. Existing local `.env` files were not copied, printed, or modified. No env files are tracked in the current Git index; this is not an audit of all historical commits.
 
@@ -35,7 +35,7 @@ Compose requires **2.30.0+** for `env_file.format: raw`. Write raw `KEY=value` l
 
 ## AWS resources to provision manually
 
-- Private ECR repository `veritas-fullstack` in `ap-south-1`, image scanning enabled. Permit `latest` to be overwritten; retain commit tags for rollback. Do not expire the active or intended rollback images.
+- Private ECR repository `veritas-fullstack` in `us-east-1`, image scanning enabled. Permit `latest` to be overwritten; retain commit tags for rollback. Do not expire the active or intended rollback images.
 - EC2 x86_64 Ubuntu instance, EBS volume, instance profile, Elastic IP, and security group. Allow public 80/443, SSH 22 only from approved deployment/admin sources, and **no inbound 3000 or 27017**. GitHub-hosted runner addresses vary: arrange approved runner egress or a runner with fixed egress and update `runs-on` if needed. The runner must reach SSH; do not solve this by opening SSH to everyone.
 - IAM GitHub OIDC provider and push role; separate EC2 instance role for pull-only ECR access.
 - Domain DNS (Route 53 or existing provider), MongoDB Atlas/external MongoDB with backups and network access from EC2, and Cloudinary account for image uploads.
@@ -43,7 +43,7 @@ Compose requires **2.30.0+** for `env_file.format: raw`. Write raw `KEY=value` l
 Optional manual ECR creation from an authenticated administrator workstation (SSO is suitable):
 
 ```bash
-aws ecr create-repository --region ap-south-1 \
+aws ecr create-repository --region us-east-1 \
   --repository-name veritas-fullstack \
   --image-tag-mutability MUTABLE \
   --image-scanning-configuration scanOnPush=true
@@ -51,18 +51,18 @@ aws ecr create-repository --region ap-south-1 \
 
 ### GitHub OIDC role
 
-Provider URL: `https://token.actions.githubusercontent.com`; audience: `sts.amazonaws.com`. Role trust example; replace account/owner/repository placeholders:
+Provider URL: `https://token.actions.githubusercontent.com`; audience: `sts.amazonaws.com`. Role trust example:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [{
     "Effect": "Allow",
-    "Principal": {"Federated": "arn:aws:iam::ACCOUNT_ID:oidc-provider/token.actions.githubusercontent.com"},
+    "Principal": {"Federated": "arn:aws:iam::555915161335:oidc-provider/token.actions.githubusercontent.com"},
     "Action": "sts:AssumeRoleWithWebIdentity",
     "Condition": {"StringEquals": {
       "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-      "token.actions.githubusercontent.com:sub": "repo:OWNER/REPOSITORY:ref:refs/heads/main"
+      "token.actions.githubusercontent.com:sub": "repo:servyyai-alt/Veritas-NextJS:ref:refs/heads/main"
     }}
   }]
 }
@@ -81,7 +81,7 @@ Attach this scoped push policy to the GitHub role:
       "ecr:BatchCheckLayerAvailability","ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart","ecr:CompleteLayerUpload","ecr:PutImage",
       "ecr:BatchGetImage","ecr:GetDownloadUrlForLayer"
-    ],"Resource":"arn:aws:ecr:ap-south-1:ACCOUNT_ID:repository/veritas-fullstack"}
+    ],"Resource":"arn:aws:ecr:us-east-1:555915161335:repository/veritas-fullstack"}
   ]
 }
 ```
@@ -97,7 +97,7 @@ Create a role trusted by `ec2.amazonaws.com` for `sts:AssumeRole`, attach it thr
 Repository Actions secrets:
 
 - `AWS_ROLE_ARN`: GitHub OIDC push-role ARN.
-- `EC2_HOST`: Elastic IP or public hostname, without a URL scheme.
+- `EC2_HOST`: `44.194.12.74`, the Elastic IP shown for the `veritas-production` instance, without a URL scheme.
 - `EC2_USER`: deployment SSH user, for example `ubuntu`.
 - `EC2_SSH_PRIVATE_KEY`: private key whose public key is authorized on EC2.
 
@@ -150,7 +150,7 @@ sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo systemctl enable --now docker nginx
 sudo usermod -aG docker "$USER"
-sudo install -d -m 700 -o "$USER" -g "$USER" /opt/veritas
+sudo install -d -m 700 -o "$USER" -g "$USER" /var/www/veritas
 curl -fsSLo /tmp/awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 unzip -q /tmp/awscliv2.zip -d /tmp/veritas-awscli
 sudo /tmp/veritas-awscli/aws/install
@@ -170,14 +170,14 @@ Ensure the returned identity is the EC2 instance role. Authorize the deployment 
 From the **local workstation**, replace the example host and user:
 
 ```bash
-scp docker-compose.yml deploy/deploy.sh .env.example ubuntu@EC2_HOST:/opt/veritas/
-scp deploy/nginx/veritas.conf ubuntu@EC2_HOST:/opt/veritas/veritas.conf
+scp docker-compose.yml deploy/deploy.sh .env.example ubuntu@EC2_HOST:/var/www/veritas/
+scp deploy/nginx/veritas.conf ubuntu@EC2_HOST:/var/www/veritas/veritas.conf
 ```
 
 On **EC2**, create the runtime file once:
 
 ```bash
-cd /opt/veritas
+cd /var/www/veritas
 cp .env.example .env
 chmod 600 .env
 nano .env
@@ -188,9 +188,9 @@ openssl rand -hex 32
 Create ECR/IAM/GitHub settings before pushing `main`. The first push builds/pushes both image tags and runs deployment automatically. For an initial manual deployment **after the image exists in ECR**, substitute the account ID and full 40-character built commit SHA:
 
 ```bash
-cd /opt/veritas
-bash deploy.sh ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com FULL_40_CHARACTER_COMMIT_SHA
-docker compose --env-file .image.env ps
+cd /var/www/veritas
+bash deploy.sh 555915161335.dkr.ecr.us-east-1.amazonaws.com FULL_40_CHARACTER_COMMIT_SHA
+docker compose ps
 curl --fail http://127.0.0.1:3000/api/health
 ```
 
@@ -201,7 +201,7 @@ Configure MongoDB Atlas network access for the EC2 egress IP, not the GitHub run
 Point A records for the apex and `www` names to the Elastic IP (or `www` CNAME to apex). Only publish AAAA records if IPv6 routing is configured. Replace both domain placeholders before installation:
 
 ```bash
-cd /opt/veritas
+cd /var/www/veritas
 nano veritas.conf
 sudo cp veritas.conf /etc/nginx/sites-available/veritas
 sudo ln -sfn /etc/nginx/sites-available/veritas /etc/nginx/sites-enabled/veritas
@@ -224,12 +224,12 @@ Only pushes to `main` trigger the workflow. Failures in build, either push, SSH,
 Routine commands on EC2:
 
 ```bash
-cd /opt/veritas
-docker compose --env-file .image.env ps
-docker compose --env-file .image.env logs --tail=100 app
-docker compose --env-file .image.env up -d --wait --wait-timeout 120
+cd /var/www/veritas
+docker compose ps
+docker compose logs --tail=100 app
+docker compose up -d --remove-orphans
 # After editing runtime variables:
-docker compose --env-file .image.env up -d --force-recreate --wait --wait-timeout 120
+docker compose up -d --force-recreate --remove-orphans
 sudo nginx -t
 sudo journalctl -u nginx --since '30 minutes ago'
 sudo tail -n 100 /var/log/nginx/error.log
@@ -242,9 +242,8 @@ docker system df
 Rollback: pause pushes until recovery is complete, find a known-good full SHA in ECR/GitHub or `previous-image.txt`, and redeploy it:
 
 ```bash
-cd /opt/veritas
-cat previous-image.txt
-bash deploy.sh ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com KNOWN_GOOD_40_CHARACTER_SHA
+cd /var/www/veritas
+bash deploy.sh 555915161335.dkr.ecr.us-east-1.amazonaws.com KNOWN_GOOD_40_CHARACTER_SHA
 curl --fail https://yourdomain.com/api/health
 ```
 

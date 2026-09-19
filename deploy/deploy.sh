@@ -1,29 +1,104 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
-cd /opt/veritas
+
+set -euo pipefail
+
+cd /var/www/veritas
+
 registry=${1:?ECR registry required}
 sha=${2:?Commit SHA required}
-[[ "$registry" =~ ^[0-9]{12}\.dkr\.ecr\.ap-south-1\.amazonaws\.com$ ]]
+
+[[ "$registry" =~ ^555915161335\.dkr\.ecr\.us-east-1\.amazonaws\.com$ ]]
 [[ "$sha" =~ ^[a-f0-9]{40}$ ]]
+
 test -s .env
-# Serialize workflow deployments and manual calls on the host.
+
+on_failure() {
+  status=$?
+
+  echo "Deployment failed; current Compose state:" >&2
+  docker compose --env-file .image.env ps >&2 || true
+
+  echo "Recent veritas-app logs:" >&2
+  docker logs --tail 120 veritas-app >&2 || true
+
+  exit "$status"
+}
+
+trap on_failure ERR
+
+# Prevent multiple deployments from running at the same time.
 exec 9>.deploy.lock
 flock -w 300 9
-export AWS_REGION=ap-south-1
-# Credentials must come from the EC2 instance profile, never static files/env.
-unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_PROFILE AWS_DEFAULT_PROFILE
-export AWS_SHARED_CREDENTIALS_FILE=/dev/null AWS_CONFIG_FILE=/dev/null
+
+export AWS_REGION=us-east-1
+
+# Credentials must come from the EC2 IAM role.
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_SESSION_TOKEN
+unset AWS_PROFILE
+unset AWS_DEFAULT_PROFILE
+
+export AWS_SHARED_CREDENTIALS_FILE=/dev/null
+export AWS_CONFIG_FILE=/dev/null
+
 export APP_IMAGE="$registry/veritas-fullstack:$sha"
-aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$registry"
-trap 'echo "Deployment failed; inspect docker compose ps and docker compose logs on EC2" >&2' ERR
-docker compose --env-file /dev/null pull app
-docker inspect --format '{{.Config.Image}}' veritas-app > previous-image.txt.tmp 2>/dev/null || true
-if test -s previous-image.txt.tmp; then mv previous-image.txt.tmp previous-image.txt; fi
-docker compose --env-file /dev/null up -d --wait --wait-timeout 120 app
-# Persist the selected SHA without touching the application secrets.
+
+echo "Logging in to Amazon ECR..."
+
+aws ecr get-login-password --region "$AWS_REGION" \
+  | docker login \
+      --username AWS \
+      --password-stdin "$registry"
+
+# Save the exact Docker image that should be deployed.
+# This is only for Docker Compose interpolation.
+# Application secrets remain inside /var/www/veritas/.env.
 printf 'APP_IMAGE=%s\n' "$APP_IMAGE" > .image.env.tmp
 mv .image.env.tmp .image.env
-# Only dangling images; retain tagged SHA images for rollback.
+
+echo "Pulling Docker image..."
+
+docker compose --env-file .image.env pull
+
+echo "Starting Veritas container..."
+
+docker compose --env-file .image.env up -d --remove-orphans
+
+echo "Checking container status..."
+
+docker inspect --format '{{.State.Status}}' veritas-app \
+  | grep -qx running
+
+echo "Waiting for application health check..."
+
+for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+
+  if curl \
+    --fail \
+    --silent \
+    --show-error \
+    --max-time 10 \
+    http://127.0.0.1:3000/api/health \
+    >/dev/null; then
+
+    printf 'Health check passed on attempt %s\n' "$attempt"
+    break
+  fi
+
+  if [ "$attempt" -eq 12 ]; then
+    echo "Health check failed after 12 attempts" >&2
+    exit 1
+  fi
+
+  echo "Application not ready yet. Retry $attempt/12..."
+  sleep 5
+
+done
+
+echo "Cleaning unused dangling Docker images..."
+
 docker image prune -f
-curl --fail --silent --show-error --max-time 10 http://127.0.0.1:3000/api/health
-printf '\nDeployed %s\n' "$APP_IMAGE"
+
+printf '\nDeployment successful\n'
+printf 'Deployed image: %s\n' "$APP_IMAGE"

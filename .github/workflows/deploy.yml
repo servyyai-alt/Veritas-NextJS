@@ -9,7 +9,7 @@ concurrency:
   group: veritas-production
   cancel-in-progress: false
 env:
-  AWS_REGION: ap-south-1
+  AWS_REGION: us-east-1
   ECR_REPOSITORY: veritas-fullstack
 jobs:
   deploy:
@@ -52,5 +52,5 @@ jobs:
           chmod 600 "$HOME/.ssh/veritas" "$HOME/.ssh/known_hosts"
           trap 'rm -f "$HOME/.ssh/veritas"' EXIT
           ssh_args=(-i "$HOME/.ssh/veritas" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15)
-          scp "${ssh_args[@]}" docker-compose.yml deploy/deploy.sh "$EC2_USER@$EC2_HOST:/opt/veritas/"
-          ssh "${ssh_args[@]}" "$EC2_USER@$EC2_HOST" "bash /opt/veritas/deploy.sh '$REGISTRY' '$GITHUB_SHA'"
+          scp "${ssh_args[@]}" docker-compose.yml deploy/deploy.sh "$EC2_USER@$EC2_HOST:/var/www/veritas/"
+          ssh "${ssh_args[@]}" "$EC2_USER@$EC2_HOST" "bash /var/www/veritas/deploy.sh '$REGISTRY' '$GITHUB_SHA'"
